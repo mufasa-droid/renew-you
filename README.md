@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Renew You 🌿
 
-## Getting Started
+> A mindful, guest-first wellness sanctuary for daily reflection, mood tracking, and guided breathwork.
 
-First, run the development server:
+[![Next.js](https://img.shields.io/badge/Next.js-16.4.2-black?logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.3.0-blue?logo=react)](https://react.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org/)
+[![Vercel Deployment](https://img.shields.io/badge/Deploy-Vercel-success?logo=vercel)](https://renew-you.vercel.app)
+
+**Live Production App:** [https://renew-you.vercel.app](https://renew-you.vercel.app)  
+**Settings & Privacy:** [https://renew-you.vercel.app/settings](https://renew-you.vercel.app/settings)
+
+---
+
+## ✨ Overview
+
+Renew You is a lightweight, respectful, and aesthetically refined wellness web application. Designed for busy people seeking quiet moments of mindfulness, Renew You requires zero account registration, collects no personal telemetry, and retains all wellness data strictly within your own web browser.
+
+### Key Capabilities
+
+- **Daily Mood Check-In & History:**
+  - Fast, intuitive 5-tier mood scale (*Radiant, Serene, Neutral, Low Energy, Overwhelmed*).
+  - Same-day entry updates and edit-in-place capabilities.
+  - 7-day responsive overview and chronological history timeline.
+- **Guided Breathwork Sanctuary:**
+  - Gentle animated breathing orb with synchronized visual expansion and contraction.
+  - 3 configurable cadence presets:
+    - **Gentle Balance** (4s inhale / 4s exhale)
+    - **Calm Flow** (4s inhale / 6s exhale)
+    - **Box Breathing** (4s inhale / 4s hold / 4s exhale / 4s hold)
+  - Full playback controls (Start, Pause, Resume, Stop) and `prefers-reduced-motion` compliance.
+- **Daily Reflection Journal:**
+  - Prompted daily journaling stored locally in the browser with auto-saving and timestamps.
+- **Local Data & Privacy Management:**
+  - Dedicated `/settings` dashboard detailing browser storage behavior and longevity.
+  - Single-click, two-step confirmation to selectively erase Renew You entries (`renew_you_*`), preserving all other browser and third-party site data.
+- **Non-Clinical Care & Crisis Support:**
+  - Clear medical disclaimers emphasizing that Renew You is an informational self-care companion, not clinical psychiatric treatment.
+  - Integrated 988 Suicide & Crisis Lifeline hotline references.
+
+---
+
+## 🛠️ Architecture & Tech Stack
+
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router, Turbopack, Cache Components, Partial Prefetching)
+- **Library:** [React 19](https://react.dev/) using `useSyncExternalStore` with memoized snapshot selectors for zero hydration re-render loops
+- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
+- **Icons:** [Lucide React](https://lucide.dev/)
+- **Storage Layer:** Centralized `storageManager.ts` utility strictly namespacing `localStorage` keys:
+  - `renew_you_mood_entries_v1`
+  - `renew_you_reflection_entries_v1`
+  - `renew_you_settings_v1`
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 20+ installed
+- npm or pnpm
+
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clone the repository
+git clone https://github.com/mufasa-droid/renew-you.git
+
+# Navigate to the project directory
+cd renew-you
+
+# Install dependencies
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Running Locally
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Start the Next.js Turbopack development server
+npm run dev
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Or on Windows PowerShell:
+npm.cmd run dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-To learn more about Next.js, take a look at the following resources:
+### Building for Production
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Run TypeScript validation and compile static pages
+npm run build
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Or on Windows PowerShell:
+npm.cmd run build
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔒 Privacy & Safety Disclosures
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Browser-Only Storage:** All moods and reflections are stored locally via `window.localStorage`. If you clear site data, switch browsers, or open an incognito session, your data will not carry over.
+2. **Non-Medical Notice:** Renew You does not provide medical or psychiatric diagnoses. If you are experiencing a mental health emergency or crisis, please dial or text **988** (US/Canada) or contact your local emergency emergency healthcare provider.
+
+---
+
+## 📄 License
+
+MIT © [Renew You](https://renew-you.vercel.app)
