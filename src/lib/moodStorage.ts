@@ -169,10 +169,9 @@ export function deleteMoodEntry(id: string): boolean {
 }
 
 /**
- * Generates a 7-day chronological overview ending on today's local calendar day.
+ * Builds a 7-day chronological overview ending on today's local calendar day from a given entries array.
  */
-export function getSevenDayOverview(): SevenDayOverviewDay[] {
-  const entries = getMoodEntries();
+export function buildSevenDayOverview(entries: MoodEntry[]): SevenDayOverviewDay[] {
   const entryMap = new Map<string, MoodEntry>();
   entries.forEach((e) => entryMap.set(e.dateKey, e));
 
@@ -204,3 +203,11 @@ export function getSevenDayOverview(): SevenDayOverviewDay[] {
 
   return days;
 }
+
+/**
+ * Generates a 7-day chronological overview ending on today's local calendar day.
+ */
+export function getSevenDayOverview(): SevenDayOverviewDay[] {
+  return buildSevenDayOverview(getMoodEntries());
+}
+

@@ -1,13 +1,13 @@
 'use client';
 
-import { useSyncExternalStore, useCallback } from 'react';
+import { useSyncExternalStore, useCallback, useMemo } from 'react';
 import { MoodEntry, MoodLevel, SevenDayOverviewDay } from '@/types/mood';
 import {
   getMoodEntries,
-  getTodayMoodEntry,
   saveTodayMoodEntry,
   deleteMoodEntry,
-  getSevenDayOverview,
+  buildSevenDayOverview,
+  getLocalTodayDateKey,
 } from './moodStorage';
 import { STORAGE_KEYS, STORAGE_EVENTS, safeGetItem } from './storageManager';
 
@@ -45,23 +45,6 @@ function getServerSnapshot() {
   return SERVER_SNAPSHOT;
 }
 
-function getTodaySnapshot(): MoodEntry | null {
-  if (typeof window === 'undefined') return null;
-  return getTodayMoodEntry();
-}
-function getServerNull() {
-  return null;
-}
-
-function getOverviewSnapshot(): SevenDayOverviewDay[] {
-  if (typeof window === 'undefined') return [];
-  return getSevenDayOverview();
-}
-const SERVER_EMPTY_OVERVIEW: SevenDayOverviewDay[] = [];
-function getServerEmptyOverview() {
-  return SERVER_EMPTY_OVERVIEW;
-}
-
 function getClientLoaded() {
   return true;
 }
@@ -69,11 +52,24 @@ function getServerLoaded() {
   return false;
 }
 
+const EMPTY_OVERVIEW: SevenDayOverviewDay[] = [];
+
 export function useMoodTracker() {
   const entries = useSyncExternalStore(subscribe, getEntriesSnapshot, getServerSnapshot);
-  const todayEntry = useSyncExternalStore(subscribe, getTodaySnapshot, getServerNull);
-  const sevenDayOverview = useSyncExternalStore(subscribe, getOverviewSnapshot, getServerEmptyOverview);
   const isLoaded = useSyncExternalStore(subscribe, getClientLoaded, getServerLoaded);
+
+  // Derive todayEntry with reference stability to prevent infinite re-render loops
+  const todayEntry = useMemo(() => {
+    if (!isLoaded || entries.length === 0) return null;
+    const todayKey = getLocalTodayDateKey();
+    return entries.find((e) => e.dateKey === todayKey) || null;
+  }, [entries, isLoaded]);
+
+  // Derive sevenDayOverview with reference stability to prevent infinite re-render loops
+  const sevenDayOverview = useMemo(() => {
+    if (!isLoaded) return EMPTY_OVERVIEW;
+    return buildSevenDayOverview(entries);
+  }, [entries, isLoaded]);
 
   const saveMood = useCallback((level: MoodLevel, note?: string) => {
     return saveTodayMoodEntry({ level, note });

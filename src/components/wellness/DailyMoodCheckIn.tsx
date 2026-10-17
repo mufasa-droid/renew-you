@@ -115,7 +115,7 @@ export function DailyMoodCheckIn({
             </h2>
             <div className="flex items-center gap-1.5 text-xs text-sanctuary-text-secondary mt-0.5">
               <Calendar className="w-3.5 h-3.5 text-sanctuary-text-muted" />
-              <span>{todayDisplayDate}</span>
+              <span suppressHydrationWarning>{todayDisplayDate}</span>
             </div>
           </div>
         </div>

@@ -342,7 +342,7 @@ export default function RenewYouHomepage() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-sanctuary-text-muted">
+                  <span className="text-[10px] text-sanctuary-text-muted" suppressHydrationWarning>
                     {reflectionsLoaded ? reflections.length : 0}{' '}
                     {reflections.length === 1 ? 'reflection' : 'reflections'} saved
                   </span>

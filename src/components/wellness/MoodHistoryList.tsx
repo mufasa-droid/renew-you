@@ -36,7 +36,7 @@ export function MoodHistoryList({
           </div>
         </div>
 
-        <span className="text-xs text-brand-purple font-semibold">
+        <span className="text-xs text-brand-purple font-semibold" suppressHydrationWarning>
           {entries.length} {entries.length === 1 ? 'entry' : 'entries'}
         </span>
       </div>
@@ -55,7 +55,7 @@ export function MoodHistoryList({
           </p>
           <div className="flex items-center gap-1.5 text-xs text-sanctuary-text-muted mt-4">
             <ShieldCheck className="w-4 h-4 text-brand-mint" />
-            <span>Encrypted and kept on your local browser</span>
+            <span>Stored confidentially on your local browser</span>
           </div>
         </div>
       ) : (

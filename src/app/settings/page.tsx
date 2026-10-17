@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useSyncExternalStore } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Logo, LotusMark } from '@/components/brand/Logo';
 import { Button } from '@/components/ui/Button';
@@ -11,10 +11,8 @@ import { useReflectionTracker } from '@/lib/useReflectionTracker';
 import { useSanctuarySettings } from '@/lib/useSanctuarySettings';
 import {
   clearRenewYouData,
-  getStorageUsageSummary,
   STORAGE_KEYS,
-  STORAGE_EVENTS,
-  StorageUsageSummary,
+  isStorageAvailable,
 } from '@/lib/storageManager';
 import {
   Settings as SettingsIcon,
@@ -32,45 +30,10 @@ import {
   Feather,
 } from 'lucide-react';
 
-function subscribeStorageDiagnostics(callback: () => void) {
-  if (typeof window === 'undefined') return () => {};
-  window.addEventListener(STORAGE_EVENTS.STORAGE_CLEARED, callback);
-  window.addEventListener(STORAGE_EVENTS.MOOD_CHANGE, callback);
-  window.addEventListener(STORAGE_EVENTS.REFLECTION_CHANGE, callback);
-  window.addEventListener('storage', callback);
-  return () => {
-    window.removeEventListener(STORAGE_EVENTS.STORAGE_CLEARED, callback);
-    window.removeEventListener(STORAGE_EVENTS.MOOD_CHANGE, callback);
-    window.removeEventListener(STORAGE_EVENTS.REFLECTION_CHANGE, callback);
-    window.removeEventListener('storage', callback);
-  };
-}
-
-function getDiagnosticsSnapshot(): StorageUsageSummary {
-  return getStorageUsageSummary();
-}
-
-const SERVER_DIAGNOSTICS: StorageUsageSummary = {
-  isAvailable: true,
-  moodCount: 0,
-  reflectionCount: 0,
-  totalBytes: 0,
-  activeKeys: [],
-};
-
-function getServerDiagnosticsSnapshot(): StorageUsageSummary {
-  return SERVER_DIAGNOSTICS;
-}
-
 export default function SettingsPage() {
   const { entries, isLoaded: moodsLoaded } = useMoodTracker();
   const { reflections, isLoaded: reflectionsLoaded } = useReflectionTracker();
   const { settings, toggleAmbientSound } = useSanctuarySettings();
-  const storageSummary = useSyncExternalStore(
-    subscribeStorageDiagnostics,
-    getDiagnosticsSnapshot,
-    getServerDiagnosticsSnapshot
-  );
 
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
@@ -84,8 +47,16 @@ export default function SettingsPage() {
     keys: [],
   });
 
-  const storageAvailable = storageSummary.isAvailable;
-  const totalBytesEstimate = storageSummary.totalBytes;
+  const totalBytesEstimate = useMemo(() => {
+    if (typeof window === 'undefined') return 0;
+    const moodsBytes = entries.length > 0 ? JSON.stringify(entries).length * 2 : 0;
+    const reflectionsBytes = reflections.length > 0 ? JSON.stringify(reflections).length * 2 : 0;
+    return moodsBytes + reflectionsBytes;
+  }, [entries, reflections]);
+
+  const storageAvailable = useMemo(() => {
+    return isStorageAvailable();
+  }, []);
 
   const handleConfirmClear = () => {
     setIsClearing(true);

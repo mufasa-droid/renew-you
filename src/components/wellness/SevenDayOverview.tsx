@@ -39,7 +39,7 @@ export function SevenDayOverview({ days, className = '' }: SevenDayOverviewProps
       </div>
 
       {/* 7 Days Grid */}
-      <div className="grid grid-cols-7 gap-2 sm:gap-3 py-2">
+      <div className="grid grid-cols-7 gap-2 sm:gap-3 py-2" suppressHydrationWarning>
         {days.map((day) => {
           const entry = day.entry;
           const config = entry ? MOOD_CONFIGS[entry.level] : null;
