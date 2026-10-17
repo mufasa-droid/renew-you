@@ -4,12 +4,12 @@ import React, { useState } from 'react';
 import { Logo, LotusMark } from '@/components/brand/Logo';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
 import {
   DailyMoodCheckIn,
   SevenDayOverview,
   MoodHistoryList,
+  BreathingExercise,
 } from '@/components/wellness';
 import { useMoodTracker } from '@/lib/useMoodTracker';
 import {
@@ -17,7 +17,6 @@ import {
   Feather,
   Wind,
   Settings as SettingsIcon,
-  RotateCcw,
   CheckCircle2,
   ShieldCheck,
   Volume2,
@@ -31,8 +30,8 @@ import {
 
 export default function RenewYouHomepage() {
   // Navigation State
-  const [activeNav, setActiveNav] = useState<'home' | 'checkin' | 'overview' | 'history' | 'settings'>('home');
-  const [modalOpen, setModalOpen] = useState<'settings' | 'breathe' | 'reflect' | null>(null);
+  const [activeNav, setActiveNav] = useState<'home' | 'checkin' | 'overview' | 'history' | 'breathe' | 'settings'>('home');
+  const [modalOpen, setModalOpen] = useState<'settings' | 'breathe' | null>(null);
 
   // Persistent Client-Side Mood Storage Hook
   const {
@@ -57,44 +56,8 @@ export default function RenewYouHomepage() {
   const [reflections, setReflections] = useState<{ id: string; prompt: string; text: string; time: string }[]>([]);
   const [reflectionSuccess, setReflectionSuccess] = useState(false);
 
-  // Guided Breathing Pacer State
-  const [isBreathing, setIsBreathing] = useState(false);
-  const [breathPhase, setBreathPhase] = useState<'Inhale' | 'Hold' | 'Exhale'>('Inhale');
-  const [breathTimer, setBreathTimer] = useState(4);
-
   // Settings State
   const [ambientSound, setAmbientSound] = useState(false);
-
-  // Breathing timer interval
-  React.useEffect(() => {
-    if (!isBreathing) return;
-
-    const interval = setInterval(() => {
-      setBreathTimer((prev) => {
-        if (prev <= 1) {
-          setBreathPhase((current) => {
-            if (current === 'Inhale') return 'Hold';
-            if (current === 'Hold') return 'Exhale';
-            return 'Inhale';
-          });
-          return 4;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isBreathing]);
-
-  const toggleBreathing = () => {
-    if (isBreathing) {
-      setIsBreathing(false);
-      setBreathPhase('Inhale');
-      setBreathTimer(4);
-    } else {
-      setIsBreathing(true);
-    }
-  };
 
   const handleSaveReflection = (e: React.FormEvent) => {
     e.preventDefault();
@@ -170,14 +133,14 @@ export default function RenewYouHomepage() {
               <Feather className="w-3.5 h-3.5" />
               <span>History</span>
             </a>
-            <button
-              type="button"
-              onClick={() => setModalOpen('breathe')}
+            <a
+              href="#breathe"
+              onClick={() => setActiveNav('breathe')}
               className="px-4 py-2 rounded-full text-xs font-semibold text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-all cursor-pointer flex items-center gap-1.5"
             >
               <Wind className="w-3.5 h-3.5" />
               <span>Breathe</span>
-            </button>
+            </a>
           </nav>
 
           {/* Guest Status & Settings */}
@@ -209,13 +172,9 @@ export default function RenewYouHomepage() {
           <a href="#history" className="py-1 px-3 text-sanctuary-text-secondary hover:text-brand-purple">
             History
           </a>
-          <button
-            type="button"
-            onClick={() => setModalOpen('breathe')}
-            className="py-1 px-3 text-sanctuary-text-secondary hover:text-brand-purple"
-          >
+          <a href="#breathe" className="py-1 px-3 text-sanctuary-text-secondary hover:text-brand-purple">
             Breathe
-          </button>
+          </a>
           <button
             type="button"
             onClick={() => setModalOpen('settings')}
@@ -241,7 +200,7 @@ export default function RenewYouHomepage() {
               Welcome back to peace.
             </h1>
             <p className="text-xs sm:text-sm text-sanctuary-text-secondary mt-1 max-w-xl">
-              Check in with your emotions without signing up. Your entries and notes are confidential, kept safely on your device.
+              Check in with your emotions and take a gentle guided breath without signing up. Kept confidentially on your device.
             </p>
           </div>
 
@@ -259,7 +218,7 @@ export default function RenewYouHomepage() {
 
         {/* 2-Column Responsive Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Daily Mood Check-In & 7-Day Overview (lg:col-span-7) */}
+          {/* Left Column: Daily Mood Check-In & 7-Day Overview & History (lg:col-span-7) */}
           <section className="lg:col-span-7 flex flex-col gap-8">
             {/* Prominent Daily Mood Check-In Card */}
             <div id="check-in" className="scroll-mt-24">
@@ -283,86 +242,15 @@ export default function RenewYouHomepage() {
             </div>
           </section>
 
-          {/* Right Column: Mindful Breathing Shortcut & Daily Reflection (lg:col-span-5) */}
+          {/* Right Column: Guided Breathing Exercise & Daily Reflection (lg:col-span-5) */}
           <div className="lg:col-span-5 flex flex-col gap-8">
-            {/* Shortcut to Guided Breathing Exercise */}
-            <Card variant="tinted-purple" className="p-6 sm:p-7 flex flex-col gap-5 border border-brand-purple/20">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-white text-brand-purple flex items-center justify-center shadow-sanctuary-sm">
-                    <Wind className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm sm:text-base font-bold text-sanctuary-text-primary">
-                      Pause: Slow Down & Notice
-                    </h3>
-                    <span className="text-[11px] text-sanctuary-text-secondary">
-                      Guided 4-4-4 Box Breathing
-                    </span>
-                  </div>
-                </div>
-
-                <Badge variant="mint" size="sm">
-                  3 Mins
-                </Badge>
-              </div>
-
-              {/* Animated Pacer Visualizer */}
-              <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-white border border-sanctuary-border text-center">
-                <div
-                  className={`w-28 h-28 rounded-full border-4 border-brand-purple-light flex flex-col items-center justify-center transition-all duration-1000 ${
-                    isBreathing && breathPhase === 'Inhale'
-                      ? 'scale-110 bg-[#EFEBFA]'
-                      : isBreathing && breathPhase === 'Hold'
-                      ? 'scale-105 bg-brand-mint-light border-brand-mint'
-                      : isBreathing && breathPhase === 'Exhale'
-                      ? 'scale-90 bg-white'
-                      : 'bg-white'
-                  }`}
-                >
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-sanctuary-text-secondary">
-                    {isBreathing ? breathPhase : 'Ready'}
-                  </span>
-                  <span className="text-2xl font-extrabold text-brand-purple my-0.5">
-                    {isBreathing ? breathTimer : '4s'}
-                  </span>
-                  <span className="text-[9px] text-sanctuary-text-muted">
-                    {isBreathing ? 'rhythm' : 'Box Pacer'}
-                  </span>
-                </div>
-
-                <p className="text-xs text-sanctuary-text-secondary mt-3 max-w-xs">
-                  {isBreathing
-                    ? breathPhase === 'Inhale'
-                      ? 'Inhale gently through your nose...'
-                      : breathPhase === 'Hold'
-                      ? 'Hold and soften your shoulders...'
-                      : 'Slow, steady exhale through mouth...'
-                    : 'A gentle rhythm to calm nervous system agitation.'}
-                </p>
-              </div>
-
-              {/* Controls */}
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={isBreathing ? 'secondary' : 'primary'}
-                  size="md"
-                  fullWidth
-                  onClick={toggleBreathing}
-                  leftIcon={isBreathing ? <RotateCcw className="w-4 h-4" /> : <Wind className="w-4 h-4" />}
-                >
-                  {isBreathing ? 'Pause Breathing' : 'Start 1-Min Breathwork'}
-                </Button>
-
-                <Button
-                  variant="outline"
-                  size="md"
-                  onClick={() => setModalOpen('breathe')}
-                >
-                  Full
-                </Button>
-              </div>
-            </Card>
+            {/* Phase 7 Guided Breathing Exercise Card */}
+            <div id="breathe" className="scroll-mt-24">
+              <BreathingExercise
+                initialPattern="gentle"
+                targetCycles={4}
+              />
+            </div>
 
             {/* Daily Reflection Prompt Card */}
             <Card variant="white" className="p-6 sm:p-7 flex flex-col gap-4 border border-sanctuary-border shadow-sanctuary-sm">
@@ -472,47 +360,19 @@ export default function RenewYouHomepage() {
       </main>
 
       {/* Modals */}
-      {/* Modal: Full Breathing Exercise */}
+      {/* Modal: Full Breathing Exercise Focus */}
       <Modal
         isOpen={modalOpen === 'breathe'}
         onClose={() => setModalOpen(null)}
-        title="Mindful Pause — Full Screen Visualizer"
+        title="Mindful Pause — Focused Breathing"
         description="Relax your jaw and eyes. Allow yourself this gentle pause."
-        maxWidth="md"
+        maxWidth="lg"
       >
-        <div className="flex flex-col items-center text-center py-4">
-          <div
-            className={`w-44 h-44 rounded-full border-4 border-brand-purple-light flex flex-col items-center justify-center transition-all duration-1000 shadow-sanctuary-floating my-6 ${
-              isBreathing && breathPhase === 'Inhale'
-                ? 'scale-110 bg-[#EFEBFA]'
-                : isBreathing && breathPhase === 'Hold'
-                ? 'scale-105 bg-brand-mint-light border-brand-mint'
-                : isBreathing && breathPhase === 'Exhale'
-                ? 'scale-90 bg-white'
-                : 'bg-white'
-            }`}
-          >
-            <span className="text-xs font-bold uppercase tracking-widest text-sanctuary-text-secondary">
-              {isBreathing ? breathPhase : 'Ready'}
-            </span>
-            <span className="text-4xl font-extrabold text-brand-purple my-1">
-              {isBreathing ? breathTimer : '4'}
-            </span>
-            <span className="text-[10px] text-sanctuary-text-muted">
-              {isBreathing ? 'seconds' : 'Start Below'}
-            </span>
-          </div>
-
-          <Button
-            variant={isBreathing ? 'secondary' : 'primary'}
-            size="lg"
-            fullWidth
-            onClick={toggleBreathing}
-            leftIcon={isBreathing ? <RotateCcw className="w-4 h-4" /> : <Wind className="w-4 h-4" />}
-          >
-            {isBreathing ? 'Stop Exercise' : 'Begin 4-4-4 Breathing'}
-          </Button>
-        </div>
+        <BreathingExercise
+          initialPattern="gentle"
+          targetCycles={5}
+          onComplete={() => setModalOpen(null)}
+        />
       </Modal>
 
       {/* Modal: Settings & Guest Preferences */}
