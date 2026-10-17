@@ -499,6 +499,12 @@ export default function SettingsPage() {
             </span>
           </div>
         </div>
+
+        {/* Wellness & Emergency Care Disclaimer */}
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 pt-4 border-t border-sanctuary-border/40 text-[11px] text-sanctuary-text-muted text-center flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>Renew You is a mindful self-reflection companion, not a provider of clinical diagnosis, treatment, or emergency care.</span>
+          <span>If you are in distress or crisis, please contact local health services or dial/text <strong>988</strong> (US/Canada).</span>
+        </div>
       </footer>
     </div>
   );
