@@ -37,12 +37,12 @@ export function Navbar() {
           >
             Mindful Practices
           </a>
-          <a
-            href="#privacy"
+          <Link
+            href="/settings"
             className="text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple transition-colors"
           >
-            Privacy Sanctuary
-          </a>
+            Settings &amp; Privacy
+          </Link>
         </div>
 
         {/* Desktop Action Buttons */}
@@ -104,13 +104,13 @@ export function Navbar() {
           >
             Mindful Practices
           </a>
-          <a
-            href="#privacy"
+          <Link
+            href="/settings"
             onClick={() => setMobileMenuOpen(false)}
             className="text-base font-medium text-sanctuary-text-primary py-2 hover:text-brand-purple border-b border-sanctuary-border/40"
           >
-            Privacy Sanctuary
-          </a>
+            Settings &amp; Privacy
+          </Link>
 
           <div className="flex flex-col gap-2.5 pt-2">
             <a href="#sanctuary" onClick={() => setMobileMenuOpen(false)}>

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, User } from 'lucide-react';
 import { Logo, LotusMark } from '@/components/brand/Logo';
@@ -65,18 +66,18 @@ export function TopHeader({
         ) : null}
       </div>
 
-      {/* Right Slot: Profile avatar or custom action */}
+      {/* Right Slot: Profile/Settings avatar or custom action */}
       <div className="w-10 flex items-center justify-end">
         {rightAction ? (
           rightAction
         ) : (
-          <button
-            type="button"
-            aria-label="User profile"
+          <Link
+            href="/settings"
+            aria-label="Sanctuary settings and privacy"
             className="w-8 h-8 rounded-full bg-brand-purple-light border border-brand-purple/20 flex items-center justify-center text-brand-purple hover:bg-[#E2DBF5] transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple"
           >
             <User className="w-4 h-4" />
-          </button>
+          </Link>
         )}
       </div>
     </header>

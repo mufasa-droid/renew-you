@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Logo, LotusMark } from '@/components/brand/Logo';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -10,8 +11,12 @@ import {
   SevenDayOverview,
   MoodHistoryList,
   BreathingExercise,
+  ClearDataConfirmationModal,
 } from '@/components/wellness';
 import { useMoodTracker } from '@/lib/useMoodTracker';
+import { useReflectionTracker } from '@/lib/useReflectionTracker';
+import { useSanctuarySettings } from '@/lib/useSanctuarySettings';
+import { clearRenewYouData } from '@/lib/storageManager';
 import {
   Heart,
   Feather,
@@ -26,24 +31,38 @@ import {
   Sun,
   Calendar,
   Lock,
+  ExternalLink,
 } from 'lucide-react';
 
 export default function RenewYouHomepage() {
   // Navigation State
-  const [activeNav, setActiveNav] = useState<'home' | 'checkin' | 'overview' | 'history' | 'breathe' | 'settings'>('home');
+  const [activeNav, setActiveNav] = useState<'home' | 'checkin' | 'overview' | 'history' | 'breathe'>('home');
   const [modalOpen, setModalOpen] = useState<'settings' | 'breathe' | null>(null);
+  const [confirmClearOpen, setConfirmClearOpen] = useState(false);
+  const [clearSuccessNotice, setClearSuccessNotice] = useState(false);
 
   // Persistent Client-Side Mood Storage Hook
   const {
     entries,
     todayEntry,
     sevenDayOverview,
-    isLoaded,
+    isLoaded: moodsLoaded,
     saveMood,
     removeMood,
   } = useMoodTracker();
 
-  // In-Memory Reflection State
+  // Persistent Client-Side Reflection Storage Hook
+  const {
+    reflections,
+    isLoaded: reflectionsLoaded,
+    saveReflection,
+    removeReflection,
+  } = useReflectionTracker();
+
+  // Persistent Settings Hook
+  const { settings, toggleAmbientSound } = useSanctuarySettings();
+
+  // Curated Prompts
   const curatedPrompts = [
     'What is one gentle boundary or quiet moment you can gift yourself today?',
     'What thoughts or tensions are you ready to soften your grip on right now?',
@@ -53,24 +72,13 @@ export default function RenewYouHomepage() {
   ];
   const [promptIndex, setPromptIndex] = useState(0);
   const [reflectionInput, setReflectionInput] = useState('');
-  const [reflections, setReflections] = useState<{ id: string; prompt: string; text: string; time: string }[]>([]);
   const [reflectionSuccess, setReflectionSuccess] = useState(false);
-
-  // Settings State
-  const [ambientSound, setAmbientSound] = useState(false);
 
   const handleSaveReflection = (e: React.FormEvent) => {
     e.preventDefault();
     if (!reflectionInput.trim()) return;
 
-    const newReflection = {
-      id: Date.now().toString(),
-      prompt: curatedPrompts[promptIndex],
-      text: reflectionInput.trim(),
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    setReflections([newReflection, ...reflections]);
+    saveReflection(curatedPrompts[promptIndex], reflectionInput.trim());
     setReflectionInput('');
     setReflectionSuccess(true);
     setTimeout(() => setReflectionSuccess(false), 3000);
@@ -80,11 +88,11 @@ export default function RenewYouHomepage() {
     setPromptIndex((prev) => (prev + 1) % curatedPrompts.length);
   };
 
-  const handleClearAllStorage = () => {
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem('renew_you_mood_entries_v1');
-      window.location.reload();
-    }
+  const handleConfirmClearData = () => {
+    clearRenewYouData();
+    setConfirmClearOpen(false);
+    setModalOpen(null);
+    setClearSuccessNotice(true);
   };
 
   return (
@@ -141,6 +149,13 @@ export default function RenewYouHomepage() {
               <Wind className="w-3.5 h-3.5" />
               <span>Breathe</span>
             </a>
+            <Link
+              href="/settings"
+              className="px-4 py-2 rounded-full text-xs font-semibold text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-all cursor-pointer flex items-center gap-1.5"
+            >
+              <SettingsIcon className="w-3.5 h-3.5" />
+              <span>Settings</span>
+            </Link>
           </nav>
 
           {/* Guest Status & Settings */}
@@ -150,14 +165,13 @@ export default function RenewYouHomepage() {
               <span>Guest Session</span>
             </span>
 
-            <button
-              type="button"
+            <Link
+              href="/settings"
               aria-label="Settings & Privacy"
-              onClick={() => setModalOpen('settings')}
               className="p-2.5 rounded-full bg-white border border-sanctuary-border hover:bg-sanctuary-muted text-sanctuary-text-secondary hover:text-brand-purple shadow-sanctuary-sm transition-all cursor-pointer"
             >
               <SettingsIcon className="w-4 h-4" />
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -175,18 +189,40 @@ export default function RenewYouHomepage() {
           <a href="#breathe" className="py-1 px-3 text-sanctuary-text-secondary hover:text-brand-purple">
             Breathe
           </a>
-          <button
-            type="button"
-            onClick={() => setModalOpen('settings')}
+          <Link
+            href="/settings"
             className="py-1 px-3 text-sanctuary-text-secondary hover:text-brand-purple"
           >
             Settings
-          </button>
+          </Link>
         </div>
       </header>
 
       {/* Main Dashboard Layout */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col gap-10">
+        {/* Success Notice when data was cleared */}
+        {clearSuccessNotice && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-3 text-xs text-emerald-900 animate-in fade-in"
+          >
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>
+                All Renew You local records (moods &amp; reflections) have been permanently cleared from this browser. Your sanctuary is reset.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setClearSuccessNotice(false)}
+              className="font-bold text-emerald-700 hover:text-emerald-900 shrink-0 px-2 py-1"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
         {/* Welcome Greeting Banner */}
         <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
           <div className="flex flex-col">
@@ -208,11 +244,17 @@ export default function RenewYouHomepage() {
             <Button
               variant="outline"
               size="sm"
-              leftIcon={ambientSound ? <Volume2 className="w-4 h-4 text-brand-mint" /> : <VolumeX className="w-4 h-4" />}
-              onClick={() => setAmbientSound(!ambientSound)}
+              leftIcon={settings.ambientSound ? <Volume2 className="w-4 h-4 text-brand-mint" /> : <VolumeX className="w-4 h-4" />}
+              onClick={toggleAmbientSound}
             >
-              {ambientSound ? 'Ambiance On' : 'Silent Sanctuary'}
+              {settings.ambientSound ? 'Ambiance On' : 'Silent Sanctuary'}
             </Button>
+
+            <Link href="/settings">
+              <Button variant="secondary" size="sm" leftIcon={<SettingsIcon className="w-3.5 h-3.5" />}>
+                Settings &amp; Data
+              </Button>
+            </Link>
           </div>
         </section>
 
@@ -223,20 +265,20 @@ export default function RenewYouHomepage() {
             {/* Prominent Daily Mood Check-In Card */}
             <div id="check-in" className="scroll-mt-24">
               <DailyMoodCheckIn
-                todayEntry={isLoaded ? todayEntry : null}
+                todayEntry={moodsLoaded ? todayEntry : null}
                 onSave={(level, note) => saveMood(level, note)}
               />
             </div>
 
             {/* Simple 7-Day Overview Card */}
             <div id="overview" className="scroll-mt-24">
-              <SevenDayOverview days={isLoaded ? sevenDayOverview : []} />
+              <SevenDayOverview days={moodsLoaded ? sevenDayOverview : []} />
             </div>
 
             {/* Chronological Mood History List */}
             <div id="history" className="scroll-mt-24">
               <MoodHistoryList
-                entries={isLoaded ? entries : []}
+                entries={moodsLoaded ? entries : []}
                 onDelete={(id) => removeMood(id)}
               />
             </div>
@@ -301,7 +343,8 @@ export default function RenewYouHomepage() {
 
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-sanctuary-text-muted">
-                    {reflections.length} {reflections.length === 1 ? 'reflection' : 'reflections'} saved
+                    {reflectionsLoaded ? reflections.length : 0}{' '}
+                    {reflections.length === 1 ? 'reflection' : 'reflections'} saved
                   </span>
 
                   <Button
@@ -323,20 +366,40 @@ export default function RenewYouHomepage() {
               </form>
 
               {/* Mini List of Recorded Reflections */}
-              {reflections.length > 0 && (
+              {reflectionsLoaded && reflections.length > 0 && (
                 <div className="pt-3 border-t border-sanctuary-border flex flex-col gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-sanctuary-text-secondary">
-                    Today&apos;s Reflections
-                  </span>
-                  <div className="max-h-36 overflow-y-auto flex flex-col gap-2 pr-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-sanctuary-text-secondary">
+                      Your Saved Reflections
+                    </span>
+                    <span className="text-[10px] text-sanctuary-text-muted">
+                      Stored in this browser
+                    </span>
+                  </div>
+                  <div className="max-h-48 overflow-y-auto flex flex-col gap-2 pr-1">
                     {reflections.map((ref) => (
                       <div
                         key={ref.id}
-                        className="p-2.5 rounded-lg bg-sanctuary-bg border border-sanctuary-border/80 text-xs flex flex-col gap-1"
+                        className="p-2.5 rounded-lg bg-sanctuary-bg border border-sanctuary-border/80 text-xs flex flex-col gap-1.5 group"
                       >
-                        <span className="text-[10px] text-sanctuary-text-muted self-end">
-                          {ref.time}
-                        </span>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] text-sanctuary-text-muted italic truncate max-w-[200px]">
+                            {ref.prompt}
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] text-sanctuary-text-muted">
+                              {ref.displayTime}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removeReflection(ref.id)}
+                              aria-label="Delete reflection"
+                              className="text-sanctuary-text-muted hover:text-sanctuary-error opacity-0 group-hover:opacity-100 transition-opacity p-0.5"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
                         <p className="text-sanctuary-text-primary leading-snug">{ref.text}</p>
                       </div>
                     ))}
@@ -347,12 +410,21 @@ export default function RenewYouHomepage() {
 
             {/* Privacy Reassurance Card */}
             <Card variant="muted" className="p-5 border border-sanctuary-border flex flex-col gap-2.5">
-              <div className="flex items-center gap-2 text-xs font-bold text-sanctuary-text-primary">
-                <Lock className="w-4 h-4 text-brand-mint" />
-                <span>Confidential Guest Sanctuary</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-bold text-sanctuary-text-primary">
+                  <Lock className="w-4 h-4 text-brand-mint" />
+                  <span>Confidential Guest Sanctuary</span>
+                </div>
+                <Link
+                  href="/settings"
+                  className="text-[11px] font-semibold text-brand-purple hover:underline flex items-center gap-1"
+                >
+                  <span>Data Details</span>
+                  <ExternalLink className="w-3 h-3" />
+                </Link>
               </div>
               <p className="text-[11px] text-sanctuary-text-secondary leading-relaxed">
-                Renew You is built for personal well-being. Moods and notes are never transmitted to external servers, analyzed by algorithms, or used to make mental health diagnoses.
+                Renew You V1 stores your moods and reflections locally in this browser. No external cloud servers or accounts are used.
               </p>
             </Card>
           </div>
@@ -375,70 +447,14 @@ export default function RenewYouHomepage() {
         />
       </Modal>
 
-      {/* Modal: Settings & Guest Preferences */}
-      <Modal
-        isOpen={modalOpen === 'settings'}
-        onClose={() => setModalOpen(null)}
-        title="Sanctuary Settings & Privacy"
-        description="Manage your guest preferences and session data."
-        maxWidth="md"
-      >
-        <div className="flex flex-col gap-5">
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-sanctuary-bg border border-sanctuary-border">
-            <div>
-              <span className="text-xs font-bold text-sanctuary-text-primary block">
-                Ambient Soundscape
-              </span>
-              <span className="text-[11px] text-sanctuary-text-secondary">
-                Soft mindfulness chimes during reflections
-              </span>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={ambientSound}
-              onClick={() => setAmbientSound(!ambientSound)}
-              className={`w-11 h-6 rounded-full transition-colors p-0.5 cursor-pointer ${
-                ambientSound ? 'bg-brand-purple' : 'bg-sanctuary-border'
-              }`}
-            >
-              <div
-                className={`w-5 h-5 rounded-full bg-white transition-transform ${
-                  ambientSound ? 'translate-x-5' : 'translate-x-0'
-                }`}
-              />
-            </button>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-sanctuary-bg border border-sanctuary-border flex flex-col gap-1.5">
-            <span className="text-xs font-bold text-sanctuary-text-primary">
-              Session Privacy Status
-            </span>
-            <p className="text-[11px] text-sanctuary-text-secondary leading-relaxed">
-              You are browsing as an anonymous guest. All logged moods ({entries.length} stored entries) exist securely on your local device.
-            </p>
-          </div>
-
-          <div className="flex items-center justify-between pt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              leftIcon={<Trash2 className="w-3.5 h-3.5 text-sanctuary-error" />}
-              onClick={() => {
-                if (window.confirm('Are you sure you want to erase all stored moods from this device?')) {
-                  handleClearAllStorage();
-                }
-              }}
-            >
-              Clear Stored Data
-            </Button>
-
-            <Button variant="primary" size="sm" onClick={() => setModalOpen(null)}>
-              Done
-            </Button>
-          </div>
-        </div>
-      </Modal>
+      {/* Explicit Confirmation Modal for Data Clearing */}
+      <ClearDataConfirmationModal
+        isOpen={confirmClearOpen}
+        onClose={() => setConfirmClearOpen(false)}
+        onConfirm={handleConfirmClearData}
+        moodCount={entries.length}
+        reflectionCount={reflections.length}
+      />
 
       {/* Footer */}
       <footer className="w-full bg-white border-t border-sanctuary-border py-8 mt-12">
@@ -449,6 +465,9 @@ export default function RenewYouHomepage() {
             <span className="text-sanctuary-text-muted">&bull; Pause. Reflect. Renew.</span>
           </div>
           <div className="flex items-center gap-4">
+            <Link href="/settings" className="hover:text-brand-purple transition-colors">
+              Settings &amp; Data Management
+            </Link>
             <span className="text-sanctuary-text-muted">&copy; 2026 Renew You</span>
             <span className="flex items-center gap-1 text-brand-mint font-semibold">
               <ShieldCheck className="w-3.5 h-3.5" />

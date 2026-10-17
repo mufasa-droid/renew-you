@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
   loading?: boolean;
@@ -35,6 +35,8 @@ export function Button({
       'border border-sanctuary-border bg-white text-sanctuary-text-primary hover:bg-sanctuary-muted',
     ghost:
       'text-sanctuary-text-secondary hover:text-brand-purple hover:bg-brand-purple-light/50',
+    danger:
+      'bg-rose-600 text-white shadow-sanctuary-sm hover:bg-rose-700 hover:shadow-sanctuary-md focus-visible:ring-rose-500',
   };
 
   const sizes = {

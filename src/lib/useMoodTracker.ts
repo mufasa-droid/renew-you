@@ -8,15 +8,17 @@ import {
   saveTodayMoodEntry,
   deleteMoodEntry,
   getSevenDayOverview,
-  MOOD_CHANGE_EVENT,
 } from './moodStorage';
+import { STORAGE_KEYS, STORAGE_EVENTS, safeGetItem } from './storageManager';
 
 function subscribe(callback: () => void) {
   if (typeof window === 'undefined') return () => {};
-  window.addEventListener(MOOD_CHANGE_EVENT, callback);
+  window.addEventListener(STORAGE_EVENTS.MOOD_CHANGE, callback);
+  window.addEventListener(STORAGE_EVENTS.STORAGE_CLEARED, callback);
   window.addEventListener('storage', callback);
   return () => {
-    window.removeEventListener(MOOD_CHANGE_EVENT, callback);
+    window.removeEventListener(STORAGE_EVENTS.MOOD_CHANGE, callback);
+    window.removeEventListener(STORAGE_EVENTS.STORAGE_CLEARED, callback);
     window.removeEventListener('storage', callback);
   };
 }
@@ -27,7 +29,7 @@ let cachedEntries: MoodEntry[] = [];
 function getEntriesSnapshot(): MoodEntry[] {
   if (typeof window === 'undefined') return [];
   try {
-    const raw = window.localStorage.getItem('renew_you_mood_entries_v1') || '';
+    const raw = safeGetItem(STORAGE_KEYS.MOOD_ENTRIES) || '';
     if (raw !== cachedRawStorage) {
       cachedRawStorage = raw;
       cachedEntries = getMoodEntries();

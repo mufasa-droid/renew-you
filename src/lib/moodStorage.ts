@@ -1,8 +1,14 @@
 import { MoodEntry, MoodLevel, SevenDayOverviewDay } from '@/types/mood';
 import { MOOD_CONFIGS } from './moodConstants';
+import {
+  STORAGE_KEYS,
+  STORAGE_EVENTS,
+  safeGetItem,
+  safeSetItem,
+} from './storageManager';
 
-const STORAGE_KEY = 'renew_you_mood_entries_v1';
-export const MOOD_CHANGE_EVENT = 'renew_you_mood_change';
+export const STORAGE_KEY = STORAGE_KEYS.MOOD_ENTRIES;
+export const MOOD_CHANGE_EVENT = STORAGE_EVENTS.MOOD_CHANGE;
 
 /**
  * Returns the current local calendar date formatted as YYYY-MM-DD.
@@ -62,15 +68,13 @@ function isValidMoodEntry(item: unknown): item is MoodEntry {
 
 /**
  * Safely fetches all mood entries from localStorage.
- * Filters out malformed data gracefully.
+ * Filters out malformed data gracefully without throwing.
  */
 export function getMoodEntries(): MoodEntry[] {
-  if (typeof window === 'undefined') return [];
+  const raw = safeGetItem(STORAGE_KEYS.MOOD_ENTRIES);
+  if (!raw) return [];
 
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
 
@@ -102,10 +106,6 @@ export function saveTodayMoodEntry(input: {
   level: MoodLevel;
   note?: string;
 }): MoodEntry {
-  if (typeof window === 'undefined') {
-    throw new Error('Storage is only accessible in client-side context');
-  }
-
   const todayKey = getLocalTodayDateKey();
   const displayDate = formatDisplayDate(todayKey);
   const config = MOOD_CONFIGS[input.level];
@@ -142,12 +142,10 @@ export function saveTodayMoodEntry(input: {
     entries.unshift(savedEntry);
   }
 
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    // Notify subscribers of the change
-    window.dispatchEvent(new CustomEvent(MOOD_CHANGE_EVENT));
-  } catch {
-    // Storage quota or permission issues handled quietly
+  safeSetItem(STORAGE_KEYS.MOOD_ENTRIES, JSON.stringify(entries));
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(STORAGE_EVENTS.MOOD_CHANGE));
   }
 
   return savedEntry;
@@ -157,14 +155,14 @@ export function saveTodayMoodEntry(input: {
  * Deletes a single mood entry by ID.
  */
 export function deleteMoodEntry(id: string): boolean {
-  if (typeof window === 'undefined') return false;
-
   try {
     const entries = getMoodEntries();
     const filtered = entries.filter((e) => e.id !== id);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
-    window.dispatchEvent(new CustomEvent(MOOD_CHANGE_EVENT));
-    return true;
+    const success = safeSetItem(STORAGE_KEYS.MOOD_ENTRIES, JSON.stringify(filtered));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent(STORAGE_EVENTS.MOOD_CHANGE));
+    }
+    return success;
   } catch {
     return false;
   }
