@@ -1,13 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-plus-jakarta-sans",
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
-});
 
 export const viewport: Viewport = {
   themeColor: "#5E44B3",
@@ -30,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${plusJakartaSans.variable} h-full`}>
+    <html lang="en" className="h-full">
       <body className="min-h-full flex flex-col font-sans bg-sanctuary-bg text-sanctuary-text-primary antialiased selection:bg-brand-purple-light selection:text-brand-purple">
         {children}
       </body>
