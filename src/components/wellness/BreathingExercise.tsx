@@ -191,7 +191,7 @@ export function BreathingExercise({
   return (
     <Card
       variant="white"
-      className={`p-6 sm:p-10 flex flex-col items-center border border-sanctuary-border shadow-sanctuary-sm ${className}`}
+      className={`p-4 sm:p-10 flex flex-col items-center border border-sanctuary-border shadow-sanctuary-sm ${className}`}
     >
       {/* Top Header & Cycle Badges */}
       <div className="w-full flex items-center justify-between pb-4 border-b border-sanctuary-border/80">
@@ -300,7 +300,7 @@ export function BreathingExercise({
       {(status === 'running' || status === 'paused') && (
         <div className="flex flex-col items-center text-center w-full py-6">
           {/* Main Visual Breathing Orb with Motion-Reduce Support */}
-          <div className="relative w-64 h-64 sm:w-80 sm:h-80 my-4 flex items-center justify-center">
+          <div className="relative w-56 h-56 sm:w-80 sm:h-80 my-4 flex items-center justify-center max-w-full">
             {/* Ambient Background Glow */}
             <div
               className={`absolute inset-0 rounded-full bg-brand-purple/10 blur-2xl transition-all duration-1000 motion-reduce:transition-none ${
@@ -310,7 +310,7 @@ export function BreathingExercise({
 
             {/* Expanding/Contracting Core Ring */}
             <div
-              className={`w-48 h-48 sm:w-56 sm:h-56 rounded-full border-4 shadow-sanctuary-floating flex flex-col items-center justify-center text-center transition-all duration-1000 ease-in-out motion-reduce:transition-none motion-reduce:scale-100 ${
+              className={`w-44 h-44 sm:w-56 sm:h-56 rounded-full border-4 shadow-sanctuary-floating flex flex-col items-center justify-center text-center transition-all duration-1000 ease-in-out motion-reduce:transition-none motion-reduce:scale-100 ${
                 currentPhase.scale
               } ${currentPhase.colorClass}`}
             >

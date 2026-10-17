@@ -16,7 +16,7 @@ export function SevenDayOverview({ days, className = '' }: SevenDayOverviewProps
   const loggedDaysCount = days.filter((d) => Boolean(d.entry)).length;
 
   return (
-    <Card variant="white" className={`p-6 sm:p-7 flex flex-col gap-4 border border-sanctuary-border ${className}`}>
+    <Card variant="white" className={`p-4 sm:p-7 flex flex-col gap-4 border border-sanctuary-border ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b border-sanctuary-border/80">
         <div className="flex items-center gap-2.5">
@@ -39,7 +39,7 @@ export function SevenDayOverview({ days, className = '' }: SevenDayOverviewProps
       </div>
 
       {/* 7 Days Grid */}
-      <div className="grid grid-cols-7 gap-2 sm:gap-3 py-2" suppressHydrationWarning>
+      <div className="grid grid-cols-7 gap-1 sm:gap-3 py-2 overflow-x-auto no-scrollbar" suppressHydrationWarning>
         {days.map((day) => {
           const entry = day.entry;
           const config = entry ? MOOD_CONFIGS[entry.level] : null;
@@ -47,7 +47,7 @@ export function SevenDayOverview({ days, className = '' }: SevenDayOverviewProps
           return (
             <div
               key={day.dateKey}
-              className={`flex flex-col items-center justify-between p-2 sm:p-3 rounded-2xl border transition-all text-center ${
+              className={`flex flex-col items-center justify-between p-1.5 sm:p-3 rounded-xl sm:rounded-2xl border transition-all text-center ${
                 day.isToday
                   ? 'bg-sanctuary-muted/60 border-brand-purple/40 ring-2 ring-brand-purple/10'
                   : 'bg-white border-sanctuary-border'
@@ -55,7 +55,7 @@ export function SevenDayOverview({ days, className = '' }: SevenDayOverviewProps
             >
               {/* Day Header */}
               <span
-                className={`text-[10px] uppercase font-bold tracking-wider ${
+                className={`text-[9px] sm:text-[10px] uppercase font-bold tracking-wider ${
                   day.isToday ? 'text-brand-purple' : 'text-sanctuary-text-muted'
                 }`}
               >
@@ -72,7 +72,7 @@ export function SevenDayOverview({ days, className = '' }: SevenDayOverviewProps
               {/* Status Indicator */}
               {config ? (
                 <div
-                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold shadow-sanctuary-sm mt-1"
+                  className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white text-[10px] sm:text-[11px] font-bold shadow-sanctuary-sm mt-1"
                   style={{ backgroundColor: config.color }}
                   title={`${config.label} on ${day.dateKey}`}
                 >
@@ -80,7 +80,7 @@ export function SevenDayOverview({ days, className = '' }: SevenDayOverviewProps
                 </div>
               ) : (
                 <div
-                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-dashed border-sanctuary-border flex items-center justify-center text-sanctuary-text-muted text-[10px] mt-1"
+                  className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-dashed border-sanctuary-border flex items-center justify-center text-sanctuary-text-muted text-[10px] mt-1"
                   title={`No check-in on ${day.dateKey}`}
                 >
                   &mdash;

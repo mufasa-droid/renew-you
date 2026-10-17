@@ -176,22 +176,22 @@ export default function RenewYouHomepage() {
         </div>
 
         {/* Mobile Navigation Strip */}
-        <div className="md:hidden flex items-center justify-around px-3 py-2 border-t border-sanctuary-border/60 bg-white/60 text-xs font-semibold">
-          <a href="#check-in" className="py-1 px-3 text-brand-purple">
+        <div className="md:hidden flex items-center justify-between sm:justify-around px-2 sm:px-3 py-2 border-t border-sanctuary-border/60 bg-white/60 text-[11px] sm:text-xs font-semibold overflow-x-auto no-scrollbar whitespace-nowrap gap-1">
+          <a href="#check-in" className="py-1 px-2 sm:px-3 text-brand-purple shrink-0">
             Check-In
           </a>
-          <a href="#overview" className="py-1 px-3 text-sanctuary-text-secondary hover:text-brand-purple">
+          <a href="#overview" className="py-1 px-2 sm:px-3 text-sanctuary-text-secondary hover:text-brand-purple shrink-0">
             Overview
           </a>
-          <a href="#history" className="py-1 px-3 text-sanctuary-text-secondary hover:text-brand-purple">
+          <a href="#history" className="py-1 px-2 sm:px-3 text-sanctuary-text-secondary hover:text-brand-purple shrink-0">
             History
           </a>
-          <a href="#breathe" className="py-1 px-3 text-sanctuary-text-secondary hover:text-brand-purple">
+          <a href="#breathe" className="py-1 px-2 sm:px-3 text-sanctuary-text-secondary hover:text-brand-purple shrink-0">
             Breathe
           </a>
           <Link
             href="/settings"
-            className="py-1 px-3 text-sanctuary-text-secondary hover:text-brand-purple"
+            className="py-1 px-2 sm:px-3 text-sanctuary-text-secondary hover:text-brand-purple shrink-0"
           >
             Settings
           </Link>
@@ -333,6 +333,8 @@ export default function RenewYouHomepage() {
               <form onSubmit={handleSaveReflection} className="flex flex-col gap-3">
                 <div className="rounded-xl border border-sanctuary-border bg-sanctuary-bg/40 focus-within:bg-white focus-within:border-brand-purple focus-within:ring-2 focus-within:ring-brand-purple/20 transition-all p-3">
                   <textarea
+                    id="daily-reflection-input"
+                    aria-label="Write your mindful reflection response"
                     rows={3}
                     value={reflectionInput}
                     onChange={(e) => setReflectionInput(e.target.value)}

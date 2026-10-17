@@ -50,6 +50,7 @@ export function MoodOptionCard({
             className={cn(
               'group relative flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 cursor-pointer select-none text-center',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple focus-visible:ring-offset-2',
+              level === 'excellent' && 'col-span-2 sm:col-span-1',
               isSelected
                 ? 'bg-white border-2 shadow-sanctuary-md scale-[1.02]'
                 : 'bg-white/80 border-sanctuary-border hover:bg-sanctuary-muted/80 hover:border-brand-purple/30',

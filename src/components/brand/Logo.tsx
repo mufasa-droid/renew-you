@@ -119,7 +119,11 @@ export function Logo({
             RENEW YOU
           </span>
           {showTagline && (
-            <span className="block font-sans text-xs font-medium tracking-[0.08em] text-sanctuary-text-secondary mt-0.5">
+            <span
+              className={`font-sans text-xs font-medium tracking-[0.08em] text-sanctuary-text-secondary mt-0.5 ${
+                orientation === 'horizontal' ? 'hidden sm:block' : 'block'
+              }`}
+            >
               Pause. Reflect. Renew.
             </span>
           )}
