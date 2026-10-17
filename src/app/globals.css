@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --color-sanctuary-bg: #FBF9FD;
+  --color-sanctuary-surface: #FFFFFF;
+  --color-sanctuary-card: #FFFFFF;
+  --color-sanctuary-muted: #F3EFFC;
+  --color-sanctuary-border: #ECE7F6;
+  --color-sanctuary-text-primary: #231A3A;
+  --color-sanctuary-text-secondary: #736B84;
+  --color-sanctuary-text-muted: #A29BAF;
+
+  --color-sanctuary-error: #D9383A;
+  --color-sanctuary-error-bg: #FFF0F0;
+  --color-sanctuary-error-border: #FCD8D8;
+
+  --color-brand-purple: #5E44B3;
+  --color-brand-purple-hover: #523A9E;
+  --color-brand-purple-light: #EFEBFA;
+  --color-brand-purple-subtle: #7E67CA;
+
+  --color-brand-mint: #38B289;
+  --color-brand-mint-light: #E8F7F2;
+
+  --font-sans: var(--font-plus-jakarta-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --shadow-sanctuary-sm: 0 2px 10px rgba(94, 68, 179, 0.04);
+  --shadow-sanctuary-md: 0 4px 20px -2px rgba(94, 68, 179, 0.08);
+  --shadow-sanctuary-floating: 0 8px 30px rgba(94, 68, 179, 0.12);
+}
+
+:root {
+  --background: #FBF9FD;
+  --foreground: #231A3A;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hide scrollbar for horizontal chips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
