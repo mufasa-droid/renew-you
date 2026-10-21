@@ -27,6 +27,13 @@ export const STORAGE_EVENTS = {
   STORAGE_CLEARED: 'renew_you_storage_cleared',
 } as const;
 
+export function dispatchStorageEvent(eventName: string): void {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(eventName));
+  }
+}
+
+
 export interface StoredReflection {
   id: string;
   prompt: string;

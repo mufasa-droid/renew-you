@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const viewport: Viewport = {
   themeColor: "#5E44B3",
@@ -24,8 +25,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className="min-h-full flex flex-col font-sans bg-sanctuary-bg text-sanctuary-text-primary antialiased selection:bg-brand-purple-light selection:text-brand-purple">
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
 }
+

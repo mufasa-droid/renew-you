@@ -12,11 +12,13 @@ import {
   MoodHistoryList,
   BreathingExercise,
   ClearDataConfirmationModal,
+  GuestMigrationPrompt,
 } from '@/components/wellness';
 import { useMoodTracker } from '@/lib/useMoodTracker';
 import { useReflectionTracker } from '@/lib/useReflectionTracker';
 import { useSanctuarySettings } from '@/lib/useSanctuarySettings';
 import { clearRenewYouData } from '@/lib/storageManager';
+import { useAuth } from '@/context/AuthContext';
 import {
   Heart,
   Feather,
@@ -32,12 +34,18 @@ import {
   Calendar,
   Lock,
   ExternalLink,
+  User as UserIcon,
+  LogOut,
 } from 'lucide-react';
 
 export default function RenewYouHomepage() {
+  const { user, profile, signOut } = useAuth();
+  const displayName = profile?.display_name || user?.email?.split('@')[0] || '';
+
   // Navigation State
   const [activeNav, setActiveNav] = useState<'home' | 'checkin' | 'overview' | 'history' | 'breathe'>('home');
   const [modalOpen, setModalOpen] = useState<'settings' | 'breathe' | null>(null);
+
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const [clearSuccessNotice, setClearSuccessNotice] = useState(false);
 
@@ -167,17 +175,40 @@ export default function RenewYouHomepage() {
 
           {/* Auth Action Buttons & Settings */}
           <div className="flex items-center gap-2">
-            <Link href="/auth/login">
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-                Sign In
-              </Button>
-            </Link>
+            {user ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/settings"
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-purple/10 text-brand-purple hover:bg-brand-purple/15 text-xs font-semibold transition-colors"
+                >
+                  <UserIcon className="w-3.5 h-3.5" />
+                  <span>{displayName}</span>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => signOut()}
+                  leftIcon={<LogOut className="w-3.5 h-3.5" />}
+                  className="hidden sm:inline-flex"
+                >
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Link href="/auth/login">
+                  <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                    Sign In
+                  </Button>
+                </Link>
 
-            <Link href="/auth/register">
-              <Button variant="primary" size="sm">
-                Get Started
-              </Button>
-            </Link>
+                <Link href="/auth/register">
+                  <Button variant="primary" size="sm">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
 
             <Link
               href="/settings"
@@ -243,6 +274,9 @@ export default function RenewYouHomepage() {
           </div>
         )}
 
+        {/* Guest Data Migration Prompt if user is authenticated and has local records */}
+        <GuestMigrationPrompt />
+
         {/* Welcome Greeting Banner */}
         <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
           <div className="flex flex-col">
@@ -253,7 +287,7 @@ export default function RenewYouHomepage() {
               </span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold text-sanctuary-text-primary tracking-tight">
-              Welcome back to peace.
+              {displayName ? `Welcome back to peace, ${displayName}.` : 'Welcome back to peace.'}
             </h1>
             <p className="text-xs sm:text-sm text-sanctuary-text-secondary mt-1 max-w-xl">
               Check in with your emotions, explore guided reflections, and take a gentle breath in your personal sanctuary.

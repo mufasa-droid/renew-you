@@ -28,9 +28,15 @@ import {
   Volume2,
   Heart,
   Feather,
+  User as UserIcon,
+  LogOut,
+  Download,
+  Sparkles,
 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SettingsPage() {
+  const { user, profile, signOut } = useAuth();
   const { entries, isLoaded: moodsLoaded } = useMoodTracker();
   const { reflections, isLoaded: reflectionsLoaded } = useReflectionTracker();
   const { settings, toggleAmbientSound } = useSanctuarySettings();
@@ -81,6 +87,25 @@ export default function SettingsPage() {
     return `${(bytes / 1024).toFixed(1)} KB`;
   };
 
+  const handleExportData = () => {
+    const exportData = {
+      exportVersion: '1.1',
+      exportedAt: new Date().toISOString(),
+      account: user ? { id: user.id, email: user.email } : { mode: 'guest' },
+      moodEntries: entries,
+      reflections: reflections,
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `renew-you-data-export-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="min-h-screen bg-sanctuary-bg text-sanctuary-text-primary flex flex-col selection:bg-brand-purple-light selection:text-brand-purple">
       {/* 1. Header Navigation */}
@@ -101,11 +126,28 @@ export default function SettingsPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link href="/auth/login">
-              <Button variant="ghost" size="sm">
-                Sign In
-              </Button>
-            </Link>
+            {user ? (
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-purple/10 text-brand-purple text-xs font-semibold">
+                  <UserIcon className="w-3.5 h-3.5" />
+                  <span>{profile?.display_name || user.email?.split('@')[0]}</span>
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => signOut()}
+                  leftIcon={<LogOut className="w-3.5 h-3.5" />}
+                >
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <Link href="/auth/login">
+                <Button variant="ghost" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+            )}
 
             <Link href="/">
               <Button variant="secondary" size="sm">
@@ -131,6 +173,56 @@ export default function SettingsPage() {
             Renew You is designed around respectful, private wellness. Review your data footprint, configure sanctuary ambiance, and manage your stored records.
           </p>
         </section>
+
+        {/* Account & Platform Connection Card */}
+        <Card variant="white" className="p-6 sm:p-8 flex flex-col gap-6 border border-sanctuary-border shadow-sanctuary-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-brand-purple/10 text-brand-purple flex items-center justify-center shrink-0">
+                <UserIcon className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base sm:text-lg font-bold text-sanctuary-text-primary">
+                  {user ? 'Authenticated Sanctuary Account' : 'Guest Sanctuary Mode'}
+                </h2>
+                <p className="text-xs text-sanctuary-text-secondary">
+                  {user
+                    ? `Logged in as ${user.email}. Entries are secured by Supabase Row Level Security.`
+                    : 'Currently browsing as a guest. Your entries are saved locally on this browser.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {user ? (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleExportData}
+                  leftIcon={<Download className="w-4 h-4" />}
+                >
+                  Export Data (JSON)
+                </Button>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExportData}
+                    leftIcon={<Download className="w-4 h-4" />}
+                  >
+                    Export Local Data
+                  </Button>
+                  <Link href="/auth/register">
+                    <Button variant="primary" size="sm" leftIcon={<Sparkles className="w-4 h-4" />}>
+                      Create Account
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
 
         {/* Success Confirmation Alert when data is cleared */}
         {clearedNotice.show && (

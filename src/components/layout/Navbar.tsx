@@ -4,10 +4,14 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Logo } from '@/components/brand/Logo';
 import { Button } from '@/components/ui/Button';
-import { Menu, X, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { Menu, X, ArrowRight, User as UserIcon, LogOut } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, profile, isLoading, signOut } = useAuth();
+
+  const displayName = profile?.display_name || user?.email?.split('@')[0] || 'Friend';
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-[#FBF9FD]/90 backdrop-blur-md border-b border-sanctuary-border/80 transition-all">
@@ -24,12 +28,6 @@ export function Navbar() {
             className="text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple transition-colors"
           >
             Live Sanctuary
-          </a>
-          <a
-            href="#pillars"
-            className="text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple transition-colors"
-          >
-            The 4 Pillars
           </a>
           <a
             href="#practices"
@@ -53,23 +51,44 @@ export function Navbar() {
 
         {/* Desktop Action Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <Link href="/auth/login">
-            <Button
-              variant="ghost"
-              size="sm"
-            >
-              Sign In
-            </Button>
-          </Link>
-          <Link href="/auth/register">
-            <Button
-              variant="primary"
-              size="sm"
-              rightIcon={<ArrowRight className="w-4 h-4" />}
-            >
-              Get Started
-            </Button>
-          </Link>
+          {isLoading ? (
+            <div className="w-24 h-9 bg-sanctuary-muted/50 rounded-full animate-pulse" />
+          ) : user ? (
+            <div className="flex items-center gap-3">
+              <Link
+                href="/settings"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-purple/10 text-brand-purple hover:bg-brand-purple/15 text-xs font-semibold transition-colors"
+              >
+                <UserIcon className="w-3.5 h-3.5" />
+                <span>{displayName}</span>
+              </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => signOut()}
+                leftIcon={<LogOut className="w-3.5 h-3.5" />}
+              >
+                Sign Out
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Link href="/auth/login">
+                <Button variant="ghost" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/auth/register">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  rightIcon={<ArrowRight className="w-4 h-4" />}
+                >
+                  Get Started
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Hamburger Button */}
@@ -88,6 +107,12 @@ export function Navbar() {
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white/98 backdrop-blur-lg border-b border-sanctuary-border px-6 pt-4 pb-6 flex flex-col gap-4 shadow-sanctuary-md animate-in slide-in-from-top duration-200">
+          {user && (
+            <div className="flex items-center gap-2 py-2 px-3 rounded-xl bg-brand-purple/10 text-brand-purple text-xs font-semibold">
+              <UserIcon className="w-4 h-4" />
+              <span>Signed in as {displayName}</span>
+            </div>
+          )}
           <a
             href="#sanctuary"
             onClick={() => setMobileMenuOpen(false)}
@@ -111,19 +136,36 @@ export function Navbar() {
           </Link>
 
           <div className="flex flex-col gap-2.5 pt-2">
-            <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
-              <Button variant="primary" fullWidth rightIcon={<ArrowRight className="w-4 h-4" />}>
-                Create Free Account
+            {user ? (
+              <Button
+                variant="outline"
+                fullWidth
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  signOut();
+                }}
+                leftIcon={<LogOut className="w-4 h-4" />}
+              >
+                Sign Out
               </Button>
-            </Link>
-            <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
-              <Button variant="outline" fullWidth>
-                Sign In
-              </Button>
-            </Link>
+            ) : (
+              <>
+                <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="primary" fullWidth rightIcon={<ArrowRight className="w-4 h-4" />}>
+                    Create Free Account
+                  </Button>
+                </Link>
+                <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" fullWidth>
+                    Sign In
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
     </nav>
   );
 }
+

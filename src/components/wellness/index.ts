@@ -5,3 +5,4 @@ export * from './SevenDayOverview';
 export * from './MoodHistoryList';
 export * from './BreathingExercise';
 export * from './ClearDataConfirmationModal';
+export * from './GuestMigrationPrompt';
