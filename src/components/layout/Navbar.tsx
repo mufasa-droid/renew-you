@@ -38,6 +38,12 @@ export function Navbar() {
             Mindful Practices
           </a>
           <Link
+            href="/questionnaire"
+            className="text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple transition-colors"
+          >
+            Mindful Check-In
+          </Link>
+          <Link
             href="/settings"
             className="text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple transition-colors"
           >
@@ -47,24 +53,23 @@ export function Navbar() {
 
         {/* Desktop Action Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <a href="#sanctuary">
+          <Link href="/auth/login">
             <Button
-              variant="secondary"
+              variant="ghost"
               size="sm"
-              leftIcon={<Sparkles className="w-4 h-4 text-brand-purple" />}
             >
-              Guest Access
+              Sign In
             </Button>
-          </a>
-          <a href="#sanctuary">
+          </Link>
+          <Link href="/auth/register">
             <Button
               variant="primary"
               size="sm"
               rightIcon={<ArrowRight className="w-4 h-4" />}
             >
-              Start Reflection
+              Get Started
             </Button>
-          </a>
+          </Link>
         </div>
 
         {/* Mobile Hamburger Button */}
@@ -90,20 +95,13 @@ export function Navbar() {
           >
             Live Sanctuary
           </a>
-          <a
-            href="#pillars"
+          <Link
+            href="/questionnaire"
             onClick={() => setMobileMenuOpen(false)}
             className="text-base font-medium text-sanctuary-text-primary py-2 hover:text-brand-purple border-b border-sanctuary-border/40"
           >
-            The 4 Pillars
-          </a>
-          <a
-            href="#practices"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-base font-medium text-sanctuary-text-primary py-2 hover:text-brand-purple border-b border-sanctuary-border/40"
-          >
-            Mindful Practices
-          </a>
+            Mindful Check-In
+          </Link>
           <Link
             href="/settings"
             onClick={() => setMobileMenuOpen(false)}
@@ -113,15 +111,16 @@ export function Navbar() {
           </Link>
 
           <div className="flex flex-col gap-2.5 pt-2">
-            <a href="#sanctuary" onClick={() => setMobileMenuOpen(false)}>
+            <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
               <Button variant="primary" fullWidth rightIcon={<ArrowRight className="w-4 h-4" />}>
-                Start Reflection
+                Create Free Account
               </Button>
-            </a>
-            <div className="flex items-center justify-center gap-1.5 text-xs text-sanctuary-text-muted pt-1">
-              <ShieldCheck className="w-4 h-4 text-brand-mint" />
-              <span>100% Guest-First & Private</span>
-            </div>
+            </Link>
+            <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="outline" fullWidth>
+                Sign In
+              </Button>
+            </Link>
           </div>
         </div>
       )}

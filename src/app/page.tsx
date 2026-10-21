@@ -150,6 +150,13 @@ export default function RenewYouHomepage() {
               <span>Breathe</span>
             </a>
             <Link
+              href="/questionnaire"
+              className="px-4 py-2 rounded-full text-xs font-semibold text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-all cursor-pointer flex items-center gap-1.5"
+            >
+              <Heart className="w-3.5 h-3.5" />
+              <span>Questionnaire</span>
+            </Link>
+            <Link
               href="/settings"
               className="px-4 py-2 rounded-full text-xs font-semibold text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-all cursor-pointer flex items-center gap-1.5"
             >
@@ -158,12 +165,19 @@ export default function RenewYouHomepage() {
             </Link>
           </nav>
 
-          {/* Guest Status & Settings */}
+          {/* Auth Action Buttons & Settings */}
           <div className="flex items-center gap-2">
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-mint-light text-brand-mint text-xs font-semibold">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Guest Session</span>
-            </span>
+            <Link href="/auth/login">
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                Sign In
+              </Button>
+            </Link>
+
+            <Link href="/auth/register">
+              <Button variant="primary" size="sm">
+                Get Started
+              </Button>
+            </Link>
 
             <Link
               href="/settings"
@@ -189,6 +203,12 @@ export default function RenewYouHomepage() {
           <a href="#breathe" className="py-1 px-2 sm:px-3 text-sanctuary-text-secondary hover:text-brand-purple shrink-0">
             Breathe
           </a>
+          <Link
+            href="/questionnaire"
+            className="py-1 px-2 sm:px-3 text-sanctuary-text-secondary hover:text-brand-purple shrink-0"
+          >
+            Questionnaire
+          </Link>
           <Link
             href="/settings"
             className="py-1 px-2 sm:px-3 text-sanctuary-text-secondary hover:text-brand-purple shrink-0"
@@ -236,7 +256,7 @@ export default function RenewYouHomepage() {
               Welcome back to peace.
             </h1>
             <p className="text-xs sm:text-sm text-sanctuary-text-secondary mt-1 max-w-xl">
-              Check in with your emotions and take a gentle guided breath without signing up. Kept confidentially on your device.
+              Check in with your emotions, explore guided reflections, and take a gentle breath in your personal sanctuary.
             </p>
           </div>
 
@@ -415,7 +435,7 @@ export default function RenewYouHomepage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs font-bold text-sanctuary-text-primary">
                   <Lock className="w-4 h-4 text-brand-mint" />
-                  <span>Confidential Guest Sanctuary</span>
+                  <span>Personal Wellness Sanctuary</span>
                 </div>
                 <Link
                   href="/settings"
@@ -426,7 +446,7 @@ export default function RenewYouHomepage() {
                 </Link>
               </div>
               <p className="text-[11px] text-sanctuary-text-secondary leading-relaxed">
-                Renew You V1 stores your moods and reflections locally in this browser. No external cloud servers or accounts are used.
+                Renew You keeps your moods and reflections secure and private to your account. You can review or clear your data at any time in Settings.
               </p>
             </Card>
           </div>
@@ -473,7 +493,7 @@ export default function RenewYouHomepage() {
             <span className="text-sanctuary-text-muted">&copy; 2026 Renew You</span>
             <span className="flex items-center gap-1 text-brand-mint font-semibold">
               <ShieldCheck className="w-3.5 h-3.5" />
-              Guest-First &amp; Confidential
+              Private &amp; Secure
             </span>
           </div>
         </div>

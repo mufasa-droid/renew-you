@@ -101,10 +101,11 @@ export default function SettingsPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-mint-light text-brand-mint text-xs font-semibold">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Guest Session</span>
-            </span>
+            <Link href="/auth/login">
+              <Button variant="ghost" size="sm">
+                Sign In
+              </Button>
+            </Link>
 
             <Link href="/">
               <Button variant="secondary" size="sm">
@@ -124,10 +125,10 @@ export default function SettingsPage() {
             <span>Preferences &amp; Privacy</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold text-sanctuary-text-primary tracking-tight">
-            Settings &amp; Local Data Management
+            Settings &amp; Data Management
           </h1>
           <p className="text-xs sm:text-sm text-sanctuary-text-secondary max-w-2xl leading-relaxed">
-            Renew You is designed around respectful, guest-first wellness. Review your local storage footprint, configure sanctuary ambiance, and manage your stored records.
+            Renew You is designed around respectful, private wellness. Review your data footprint, configure sanctuary ambiance, and manage your stored records.
           </p>
         </section>
 
