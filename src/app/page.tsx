@@ -30,23 +30,59 @@ import {
   VolumeX,
   Shuffle,
   Trash2,
-  Sun,
-  Calendar,
   Lock,
   ExternalLink,
-  User as UserIcon,
   LogOut,
+  ChevronDown,
+  Menu,
+  X,
 } from 'lucide-react';
 
 export default function RenewYouHomepage() {
   const { user, profile, signOut } = useAuth();
   const displayName = profile?.display_name || user?.email?.split('@')[0] || '';
   const firstName = displayName ? displayName.trim().split(/\s+/)[0] : '';
+  const userInitials = (displayName || 'Guest')
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .substring(0, 2)
+    .toUpperCase();
 
   // Navigation State
-  const [activeNav, setActiveNav] = useState<'home' | 'checkin' | 'overview' | 'history' | 'breathe'>('home');
-  const [modalOpen, setModalOpen] = useState<'settings' | 'breathe' | null>(null);
+  const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [currentDateFormatted, setCurrentDateFormatted] = useState('');
+  const avatarMenuRef = React.useRef<HTMLDivElement>(null);
 
+  React.useEffect(() => {
+    setCurrentDateFormatted(
+      new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+    );
+  }, []);
+
+  // Close avatar dropdown on outside click or Escape
+  React.useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (avatarMenuRef.current && !avatarMenuRef.current.contains(e.target as Node)) {
+        setIsAvatarMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsAvatarMenuOpen(false);
+        setIsMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  const [modalOpen, setModalOpen] = useState<'settings' | 'breathe' | null>(null);
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const [clearSuccessNotice, setClearSuccessNotice] = useState(false);
 
@@ -106,7 +142,7 @@ export default function RenewYouHomepage() {
 
   return (
     <div className="min-h-screen bg-sanctuary-bg text-sanctuary-text-primary flex flex-col selection:bg-brand-purple-light selection:text-brand-purple">
-      {/* 1. Header Navigation */}
+      {/* 1. Top Navigation Bar */}
       <header className="sticky top-0 z-40 w-full bg-[#FBF9FD]/95 backdrop-blur-md border-b border-sanctuary-border transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3 shrink-0">
@@ -115,184 +151,182 @@ export default function RenewYouHomepage() {
             </Link>
           </div>
 
-          {/* Desktop Navigation Links */}
+          {/* Primary Nav Links (Desktop) */}
           <nav aria-label="Main Navigation" className="hidden lg:flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => setActiveNav('home')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
-                activeNav === 'home'
-                  ? 'bg-purple-100/80 text-purple-900 shadow-sm'
-                  : 'text-sanctuary-text-secondary hover:text-sanctuary-text-primary hover:bg-sanctuary-muted'
-              }`}
+            <Link
+              href="/"
+              aria-current="page"
+              className="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-purple-100/90 text-purple-900 border border-brand-purple/20 shadow-xs whitespace-nowrap"
             >
               Sanctuary Home
-            </button>
-            <a
-              href="#check-in"
-              onClick={() => setActiveNav('checkin')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-                activeNav === 'checkin'
-                  ? 'bg-purple-100/80 text-purple-900 shadow-sm'
-                  : 'text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted'
-              }`}
-            >
-              <Heart className="w-3.5 h-3.5" />
-              <span>Mood Check-In</span>
-            </a>
-            <a
-              href="#overview"
-              onClick={() => setActiveNav('overview')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-                activeNav === 'overview'
-                  ? 'bg-purple-100/80 text-purple-900 shadow-sm'
-                  : 'text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted'
-              }`}
-            >
-              <Calendar className="w-3.5 h-3.5" />
-              <span>7-Day Overview</span>
-            </a>
-            <a
-              href="#history"
-              onClick={() => setActiveNav('history')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-                activeNav === 'history'
-                  ? 'bg-purple-100/80 text-purple-900 shadow-sm'
-                  : 'text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted'
-              }`}
-            >
-              <Feather className="w-3.5 h-3.5" />
-              <span>History</span>
-            </a>
-            <a
-              href="#breathe"
-              onClick={() => setActiveNav('breathe')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-                activeNav === 'breathe'
-                  ? 'bg-purple-100/80 text-purple-900 shadow-sm'
-                  : 'text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted'
-              }`}
+            </Link>
+            <Link
+              href="/breathe"
+              className="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-colors whitespace-nowrap flex items-center gap-1.5"
             >
               <Wind className="w-3.5 h-3.5" />
               <span>Breathe</span>
-            </a>
+            </Link>
+            <Link
+              href="/history"
+              className="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-colors whitespace-nowrap flex items-center gap-1.5"
+            >
+              <Feather className="w-3.5 h-3.5" />
+              <span>History</span>
+            </Link>
             <Link
               href="/questionnaire"
-              className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5"
+              className="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-colors whitespace-nowrap flex items-center gap-1.5"
             >
               <Heart className="w-3.5 h-3.5" />
               <span>Questionnaire</span>
             </Link>
           </nav>
 
-          {/* Consolidate Redundant Controls & User Actions */}
+          {/* User Avatar Dropdown & Mobile Toggle */}
           <div className="flex items-center gap-2">
-            {user ? (
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                {/* User Profile Pill */}
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-100/80 text-purple-900 text-xs font-semibold whitespace-nowrap">
-                  <UserIcon className="w-3.5 h-3.5 text-purple-700 shrink-0" />
-                  <span className="truncate max-w-[140px] sm:max-w-[180px]">{displayName || 'Sanctuary Friend'}</span>
+            {/* Avatar Dropdown */}
+            <div className="relative" ref={avatarMenuRef}>
+              <button
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded={isAvatarMenuOpen}
+                aria-label="User account menu"
+                onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
+                className="flex items-center gap-1.5 p-1 rounded-full hover:ring-2 hover:ring-brand-purple-light transition-all outline-none focus-visible:ring-2 focus-visible:ring-brand-purple"
+              >
+                <div className="w-8 h-8 rounded-full bg-brand-purple text-white flex items-center justify-center text-xs font-bold shadow-xs">
+                  {userInitials}
                 </div>
+                <ChevronDown size={14} className="text-sanctuary-text-secondary hidden sm:block" />
+              </button>
 
-                {/* Single Clean Settings Link */}
-                <Link
-                  href="/settings"
-                  title="Settings & Privacy"
-                  className="p-2 rounded-full text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-colors flex items-center gap-1 text-xs font-semibold"
-                  aria-label="Settings"
+              {isAvatarMenuOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 mt-2 w-52 bg-white border border-sanctuary-border rounded-2xl shadow-sanctuary-floating py-2 z-50 animate-in fade-in slide-in-from-top-1"
                 >
-                  <SettingsIcon className="w-4 h-4" />
-                  <span className="hidden xl:inline">Settings</span>
-                </Link>
+                  <div className="px-4 py-2 border-b border-sanctuary-border/60">
+                    <p className="text-xs font-bold text-sanctuary-text-primary truncate">
+                      {displayName || 'Sanctuary Guest'}
+                    </p>
+                    <p className="text-[11px] text-sanctuary-text-secondary truncate">
+                      {user?.email || 'Local private profile'}
+                    </p>
+                  </div>
 
-                {/* Sign Out Button */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => signOut()}
-                  leftIcon={<LogOut className="w-3.5 h-3.5" />}
-                  className="hidden sm:inline-flex text-xs"
-                >
-                  Sign Out
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <Link href="/auth/login">
-                  <Button variant="ghost" size="sm" className="hidden sm:inline-flex text-xs whitespace-nowrap">
-                    Sign In
-                  </Button>
-                </Link>
+                  <Link
+                    href="/settings"
+                    role="menuitem"
+                    onClick={() => setIsAvatarMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-sanctuary-text-primary hover:bg-sanctuary-muted transition-colors"
+                  >
+                    <SettingsIcon className="w-4 h-4 text-sanctuary-text-secondary" />
+                    <span>Settings &amp; Privacy</span>
+                  </Link>
 
-                <Link href="/auth/register">
-                  <Button variant="primary" size="sm" className="text-xs whitespace-nowrap">
-                    Get Started
-                  </Button>
-                </Link>
+                  {user ? (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setIsAvatarMenuOpen(false);
+                        signOut();
+                      }}
+                      className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  ) : (
+                    <div className="border-t border-sanctuary-border/60 pt-1 mt-1">
+                      <Link
+                        href="/auth/login"
+                        role="menuitem"
+                        onClick={() => setIsAvatarMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-brand-purple hover:bg-sanctuary-muted"
+                      >
+                        <span>Sign In</span>
+                      </Link>
+                      <Link
+                        href="/auth/register"
+                        role="menuitem"
+                        onClick={() => setIsAvatarMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-brand-purple hover:bg-sanctuary-muted"
+                      >
+                        <span>Create Account</span>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
-                <Link
-                  href="/settings"
-                  title="Settings & Privacy"
-                  className="p-2 rounded-full text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-colors"
-                  aria-label="Settings"
-                >
-                  <SettingsIcon className="w-4 h-4" />
-                </Link>
-              </div>
-            )}
+            {/* Mobile Menu Hamburger Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle navigation menu"
+              aria-expanded={isMobileMenuOpen}
+              className="lg:hidden p-2 text-sanctuary-text-secondary hover:text-sanctuary-text-primary hover:bg-sanctuary-muted rounded-xl transition-colors"
+            >
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Strip */}
-        <div className="lg:hidden flex items-center justify-between sm:justify-around px-2 sm:px-3 py-2 border-t border-sanctuary-border/60 bg-white/60 text-[11px] sm:text-xs font-semibold overflow-x-auto no-scrollbar whitespace-nowrap gap-1">
-          <a
-            href="#check-in"
-            onClick={() => setActiveNav('checkin')}
-            className={`py-1 px-2.5 rounded-full whitespace-nowrap ${
-              activeNav === 'checkin' ? 'bg-purple-100/80 text-purple-900' : 'text-brand-purple'
-            }`}
+        {/* Mobile Navigation Drawer / Sheet */}
+        {isMobileMenuOpen && (
+          <nav
+            aria-label="Mobile Navigation"
+            className="lg:hidden px-4 py-3 border-t border-sanctuary-border bg-white/95 backdrop-blur-md flex flex-col gap-1.5 animate-in slide-in-from-top-2"
           >
-            Check-In
-          </a>
-          <a
-            href="#overview"
-            onClick={() => setActiveNav('overview')}
-            className="py-1 px-2.5 text-sanctuary-text-secondary hover:text-brand-purple whitespace-nowrap"
-          >
-            Overview
-          </a>
-          <a
-            href="#history"
-            onClick={() => setActiveNav('history')}
-            className="py-1 px-2.5 text-sanctuary-text-secondary hover:text-brand-purple whitespace-nowrap"
-          >
-            History
-          </a>
-          <a
-            href="#breathe"
-            onClick={() => setActiveNav('breathe')}
-            className="py-1 px-2.5 text-sanctuary-text-secondary hover:text-brand-purple whitespace-nowrap"
-          >
-            Breathe
-          </a>
-          <Link
-            href="/questionnaire"
-            className="py-1 px-2.5 text-sanctuary-text-secondary hover:text-brand-purple whitespace-nowrap"
-          >
-            Questionnaire
-          </Link>
-          <Link
-            href="/settings"
-            className="py-1 px-2.5 text-sanctuary-text-secondary hover:text-brand-purple whitespace-nowrap"
-          >
-            Settings
-          </Link>
-        </div>
+            <Link
+              href="/"
+              aria-current="page"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-purple-100/90 text-purple-900 border border-brand-purple/20"
+            >
+              Sanctuary Home
+            </Link>
+            <Link
+              href="/breathe"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-3.5 py-2 rounded-xl text-xs font-medium text-sanctuary-text-secondary hover:bg-sanctuary-muted flex items-center gap-2"
+            >
+              <Wind className="w-4 h-4 text-brand-purple" />
+              <span>Breathe</span>
+            </Link>
+            <Link
+              href="/history"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-3.5 py-2 rounded-xl text-xs font-medium text-sanctuary-text-secondary hover:bg-sanctuary-muted flex items-center gap-2"
+            >
+              <Feather className="w-4 h-4 text-brand-purple" />
+              <span>History</span>
+            </Link>
+            <Link
+              href="/questionnaire"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-3.5 py-2 rounded-xl text-xs font-medium text-sanctuary-text-secondary hover:bg-sanctuary-muted flex items-center gap-2"
+            >
+              <Heart className="w-4 h-4 text-brand-purple" />
+              <span>Questionnaire</span>
+            </Link>
+            <Link
+              href="/settings"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-3.5 py-2 rounded-xl text-xs font-medium text-sanctuary-text-secondary hover:bg-sanctuary-muted flex items-center gap-2"
+            >
+              <SettingsIcon className="w-4 h-4 text-brand-purple" />
+              <span>Settings</span>
+            </Link>
+          </nav>
+        )}
       </header>
 
       {/* Main Dashboard Layout */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7 flex flex-col gap-6">
+      <main id="main-content" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7 flex flex-col gap-6">
         {/* Success Notice when data was cleared */}
         {clearSuccessNotice && (
           <div
@@ -319,53 +353,80 @@ export default function RenewYouHomepage() {
         {/* Guest Data Migration Prompt if user is authenticated and has local records */}
         <GuestMigrationPrompt />
 
-        {/* Welcome Greeting Banner */}
+        {/* Welcome Greeting Banner (Refined without redundant eyebrow) */}
         <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
           <div className="flex flex-col">
-            <div className="flex items-center gap-2 mb-1">
-              <Sun className="w-4 h-4 text-amber-500" />
-              <span className="text-xs font-bold uppercase tracking-wider text-sanctuary-text-secondary">
-                Renew You Sanctuary
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-sanctuary-text-primary tracking-tight">
+            {currentDateFormatted && (
+              <p className="text-xs font-bold text-brand-purple">
+                {currentDateFormatted}
+              </p>
+            )}
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-sanctuary-text-primary tracking-normal mt-0.5">
               {firstName ? `Welcome back to peace, ${firstName}.` : 'Welcome back to peace.'}
             </h1>
-            <p className="text-xs sm:text-sm text-sanctuary-text-secondary mt-0.5 max-w-xl">
+            <p className="text-xs sm:text-sm text-sanctuary-text-secondary mt-1 max-w-xl">
               Check in with your emotions, explore guided reflections, and take a gentle breath in your personal sanctuary.
             </p>
           </div>
 
+          {/* Accessible Silent Sanctuary Toggle Button */}
           <div className="flex items-center gap-3 shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              leftIcon={settings.ambientSound ? <Volume2 className="w-4 h-4 text-brand-mint" /> : <VolumeX className="w-4 h-4" />}
+            <button
+              type="button"
+              role="button"
+              aria-pressed={!settings.ambientSound}
+              title="Mute all sounds and ambient audio"
               onClick={toggleAmbientSound}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold transition-all shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-purple ${
+                !settings.ambientSound
+                  ? 'bg-brand-purple text-white border border-brand-purple-hover'
+                  : 'bg-white text-sanctuary-text-secondary border border-sanctuary-border hover:bg-sanctuary-muted'
+              }`}
             >
-              {settings.ambientSound ? 'Ambiance On' : 'Silent Sanctuary'}
-            </Button>
+              {!settings.ambientSound ? (
+                <>
+                  <VolumeX className="w-4 h-4 text-white" />
+                  <span>Silent: On</span>
+                </>
+              ) : (
+                <>
+                  <Volume2 className="w-4 h-4 text-brand-mint" />
+                  <span>Silent: Off</span>
+                </>
+              )}
+            </button>
           </div>
         </section>
 
-        {/* 2-Column Responsive Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          {/* Left Column: Daily Mood Check-In & 7-Day Overview & History */}
-          <section className="flex flex-col gap-6 w-full">
-            {/* Prominent Daily Mood Check-In Card */}
-            <div id="check-in" className="scroll-mt-24">
-              <DailyMoodCheckIn
-                todayEntry={moodsLoaded ? todayEntry : null}
-                onSave={(level, note) => saveMood(level, note)}
-              />
-            </div>
+        {/* 2-Column Responsive Layout - Equal Height Top Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+          {/* Left Column: Daily Mood Check-In */}
+          <section id="mood-check-in" aria-labelledby="check-in-heading" className="h-full flex flex-col">
+            <DailyMoodCheckIn
+              todayEntry={moodsLoaded ? todayEntry : null}
+              onSave={(level, note) => saveMood(level, note)}
+              className="h-full"
+            />
+          </section>
 
-            {/* Simple 7-Day Overview Card */}
+          {/* Right Column: Guided Breathing Exercise */}
+          <section id="breathe-card" aria-labelledby="breathe-heading" className="h-full flex flex-col">
+            <BreathingExercise
+              initialPattern="gentle"
+              targetCycles={4}
+              className="h-full"
+            />
+          </section>
+        </div>
+
+        {/* Secondary Dashboard Row: 7-Day Overview & Daily Reflection */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          {/* Left Column: Simple 7-Day Overview Card & Mood History List */}
+          <section className="flex flex-col gap-6 w-full">
             <div id="overview" className="scroll-mt-24">
               <SevenDayOverview days={moodsLoaded ? sevenDayOverview : []} />
             </div>
 
-            {/* Chronological Mood History List */}
             <div id="history" className="scroll-mt-24">
               <MoodHistoryList
                 entries={moodsLoaded ? entries : []}

@@ -27,6 +27,27 @@ export function MoodOptionCard({
   disabled = false,
   className = '',
 }: MoodOptionProps) {
+  const handleKeyDown = (e: React.KeyboardEvent, currentLevel: MoodLevel) => {
+    const currentIndex = MOOD_LEVELS_ORDERED.indexOf(currentLevel);
+    if (currentIndex === -1) return;
+
+    let nextIndex = -1;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      nextIndex = (currentIndex + 1) % MOOD_LEVELS_ORDERED.length;
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      nextIndex = (currentIndex - 1 + MOOD_LEVELS_ORDERED.length) % MOOD_LEVELS_ORDERED.length;
+    }
+
+    if (nextIndex !== -1) {
+      const nextLevel = MOOD_LEVELS_ORDERED[nextIndex];
+      onSelect(nextLevel);
+      const nextBtn = document.getElementById(`mood-radio-${nextLevel}`);
+      nextBtn?.focus();
+    }
+  };
+
   return (
     <div
       role="radiogroup"
@@ -41,23 +62,27 @@ export function MoodOptionCard({
         return (
           <button
             key={level}
+            id={`mood-radio-${level}`}
             type="button"
             role="radio"
             aria-checked={isSelected}
+            tabIndex={isSelected || (!selectedLevel && level === 'okay') ? 0 : -1}
             aria-label={`${config.label}: ${config.description}`}
             disabled={disabled}
             onClick={() => onSelect(level)}
+            onKeyDown={(e) => handleKeyDown(e, level)}
             className={cn(
-              'group relative flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 cursor-pointer select-none text-center',
+              'group relative flex flex-col items-center justify-between p-3 sm:p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer select-none text-center min-h-[120px]',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple focus-visible:ring-offset-2',
               level === 'excellent' && 'col-span-2 sm:col-span-1',
               isSelected
-                ? 'bg-white border-2 shadow-sanctuary-md scale-[1.02]'
-                : 'bg-white/80 border-sanctuary-border hover:bg-sanctuary-muted/80 hover:border-brand-purple/30',
+                ? 'bg-white border-2 shadow-sanctuary-md scale-105 z-10'
+                : 'bg-white/90 border-sanctuary-border hover:bg-sanctuary-muted/80 hover:border-brand-purple/30 hover:scale-[1.02]',
               disabled && 'opacity-60 cursor-not-allowed'
             )}
             style={{
               borderColor: isSelected ? config.color : undefined,
+              boxShadow: isSelected ? `0 0 0 2px ${config.color}25, 0 4px 16px -2px rgba(94, 68, 179, 0.12)` : undefined,
             }}
           >
             {/* Top Selected Indicator Pill */}
@@ -70,34 +95,36 @@ export function MoodOptionCard({
               </span>
             )}
 
-            {/* Icon Bubble */}
+            {/* Icon Bubble (24px icon in 48px chip) */}
             <div
               className={cn(
-                'w-11 h-11 rounded-full flex items-center justify-center mb-2.5 transition-transform duration-200 group-hover:scale-105',
+                'w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-transform duration-200 group-hover:scale-105 shrink-0',
                 isSelected ? 'shadow-sanctuary-sm' : ''
               )}
               style={{
-                backgroundColor: config.bgColor,
-                color: config.color,
+                backgroundColor: isSelected ? config.color : config.bgColor,
+                color: isSelected ? '#FFFFFF' : config.color,
               }}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="w-6 h-6" />
             </div>
 
-            {/* Label */}
-            <span
-              className={cn(
-                'text-xs sm:text-sm font-bold tracking-tight',
-                isSelected ? 'text-sanctuary-text-primary' : 'text-sanctuary-text-secondary'
-              )}
-            >
-              {config.label}
-            </span>
+            {/* Label & Sublabel Container */}
+            <div className="flex flex-col items-center w-full justify-start mt-auto">
+              <span
+                className={cn(
+                  'text-xs sm:text-sm font-bold tracking-normal leading-tight',
+                  isSelected ? 'text-sanctuary-text-primary' : 'text-sanctuary-text-secondary'
+                )}
+              >
+                {config.label}
+              </span>
 
-            {/* Description Subtext */}
-            <span className="text-[10px] text-sanctuary-text-muted mt-0.5 line-clamp-1">
-              {config.description}
-            </span>
+              {/* Full Sublabel - no truncation, wrapped and centered */}
+              <span className="text-xs text-sanctuary-text-muted mt-1 leading-snug text-center w-full px-0.5 font-normal">
+                {config.description}
+              </span>
+            </div>
           </button>
         );
       })}

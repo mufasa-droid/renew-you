@@ -248,36 +248,45 @@ export function BreathingExercise({
           </p>
 
           {/* Pattern Selection */}
-          <div className="flex flex-col gap-1.5 w-full mt-3 text-left">
+          <div
+            role="radiogroup"
+            aria-label="Select breathing cadence"
+            className="flex flex-col gap-1.5 w-full mt-3 text-left"
+          >
             <span className="text-xs font-semibold text-sanctuary-text-primary px-1">
               Select cadence:
             </span>
             <div className="grid grid-cols-1 gap-1.5">
-              {PATTERNS.map((pattern) => (
-                <button
-                  key={pattern.id}
-                  type="button"
-                  onClick={() => setSelectedPatternId(pattern.id)}
-                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer select-none flex items-start justify-between gap-3 ${
-                    selectedPatternId === pattern.id
-                      ? 'bg-brand-purple-light/50 border-brand-purple/40 ring-1 ring-brand-purple/20'
-                      : 'bg-white border-sanctuary-border hover:bg-sanctuary-muted'
-                  }`}
-                >
-                  <div>
-                    <span className="text-xs font-bold text-sanctuary-text-primary block">
-                      {pattern.name}
-                    </span>
-                    <span className="text-[11px] text-sanctuary-text-secondary mt-0.5 block leading-normal">
-                      {pattern.description}
-                    </span>
-                  </div>
+              {PATTERNS.map((pattern) => {
+                const isSelected = selectedPatternId === pattern.id;
+                return (
+                  <button
+                    key={pattern.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={isSelected}
+                    onClick={() => setSelectedPatternId(pattern.id)}
+                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer select-none flex items-start justify-between gap-3 outline-none focus-visible:ring-2 focus-visible:ring-brand-purple ${
+                      isSelected
+                        ? 'bg-brand-purple-light/50 border-brand-purple/60 ring-1 ring-brand-purple/30'
+                        : 'bg-white border-sanctuary-border hover:bg-sanctuary-muted'
+                    }`}
+                  >
+                    <div>
+                      <span className="text-xs font-bold text-sanctuary-text-primary block">
+                        {pattern.name}
+                      </span>
+                      <span className="text-xs text-sanctuary-text-secondary mt-0.5 block leading-normal">
+                        {pattern.description}
+                      </span>
+                    </div>
 
-                  <span className="text-[10px] font-semibold text-brand-purple shrink-0 uppercase tracking-wider bg-white px-2 py-0.5 rounded-full border border-sanctuary-border">
-                    {pattern.totalCycleDuration}s / cycle
-                  </span>
-                </button>
-              ))}
+                    <span className="text-[11px] font-semibold text-brand-purple shrink-0 uppercase tracking-wider bg-white px-2 py-0.5 rounded-full border border-sanctuary-border">
+                      {pattern.totalCycleDuration}s / cycle
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -412,12 +421,12 @@ export function BreathingExercise({
       )}
 
       {/* Medical Disclaimer Footer */}
-      <div className="w-full mt-6 pt-4 border-t border-sanctuary-border/60 flex items-center justify-between text-[11px] text-sanctuary-text-muted">
-        <span className="flex items-center gap-1">
-          <AlertTriangle className="w-3.5 h-3.5 text-amber-500/80" />
+      <div className="w-full mt-auto pt-4 border-t border-sanctuary-border/80 flex items-center justify-between text-xs text-sanctuary-text-secondary">
+        <span className="flex items-center gap-1.5">
+          <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
           <span>Mindfulness exercise for relaxation. Not intended as medical diagnosis or treatment.</span>
         </span>
-        <span className="hidden sm:inline font-mono text-[10px]">Client-side only</span>
+        <span className="hidden sm:inline font-mono text-[11px] text-sanctuary-text-secondary">Client-side only</span>
       </div>
     </Card>
   );

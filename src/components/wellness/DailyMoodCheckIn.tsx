@@ -258,19 +258,20 @@ export function DailyMoodCheckIn({
           )}
 
           {/* Actions & Privacy Note */}
-          <div className="pt-2 border-t border-sanctuary-border flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-1.5 text-xs text-sanctuary-text-muted">
+          <div className="pt-3 border-t border-sanctuary-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-1.5 text-xs text-sanctuary-text-secondary font-medium">
               <Lock className="w-3.5 h-3.5 text-brand-mint shrink-0" />
               <span>Strictly confidential. Never uploaded or profiled.</span>
             </div>
 
-            <div className="flex items-center gap-2.5 w-full sm:w-auto">
-              {todayEntry && (
+            <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end shrink-0">
+              {todayEntry && (selectedLevel !== todayEntry.level || note.trim() !== (todayEntry.note || '').trim()) && (
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={handleCancelEdit}
+                  className="text-sanctuary-text-secondary hover:text-sanctuary-text-primary"
                 >
                   Cancel
                 </Button>
@@ -280,9 +281,12 @@ export function DailyMoodCheckIn({
                 type="submit"
                 variant="primary"
                 size="md"
-                rightIcon={<CheckCircle2 className="w-4 h-4" />}
+                disabled={!selectedLevel}
+                aria-disabled={!selectedLevel}
+                className="whitespace-nowrap shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                rightIcon={<CheckCircle2 className="w-4 h-4 shrink-0" />}
               >
-                {todayEntry ? 'Update Today’s Check-in' : 'Save Today’s Check-in'}
+                {todayEntry ? 'Update Today’s Check-in' : 'Save Check-in'}
               </Button>
             </div>
           </div>
