@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Logo } from '@/components/brand/Logo';
 import { Button } from '@/components/ui/Button';
-import { Menu, X, ArrowRight, User as UserIcon, LogOut } from 'lucide-react';
+import { Menu, X, ArrowRight, User as UserIcon, LogOut, Settings as SettingsIcon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export function Navbar() {
@@ -15,66 +15,66 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-[#FBF9FD]/90 backdrop-blur-md border-b border-sanctuary-border/80 transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <Logo size="md" showText={true} showTagline={true} orientation="horizontal" />
+        <Link href="/" className="flex items-center gap-2 group shrink-0">
+          <Logo size="sm" showText={true} showTagline={false} orientation="horizontal" />
         </Link>
 
         {/* Desktop Navigation Links */}
-        <div className="hidden md:flex items-center gap-8">
-          <a
-            href="#sanctuary"
-            className="text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple transition-colors"
+        <div className="hidden md:flex items-center gap-6">
+          <Link
+            href="/#sanctuary"
+            className="text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple transition-colors whitespace-nowrap"
           >
             Live Sanctuary
-          </a>
-          <a
-            href="#practices"
-            className="text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple transition-colors"
-          >
-            Mindful Practices
-          </a>
-          <Link
-            href="/questionnaire"
-            className="text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple transition-colors"
-          >
-            Mindful Check-In
           </Link>
           <Link
-            href="/settings"
-            className="text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple transition-colors"
+            href="/#practices"
+            className="text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple transition-colors whitespace-nowrap"
           >
-            Settings &amp; Privacy
+            Mindful Practices
+          </Link>
+          <Link
+            href="/questionnaire"
+            className="text-sm font-medium text-sanctuary-text-secondary hover:text-brand-purple transition-colors whitespace-nowrap"
+          >
+            Mindful Check-In
           </Link>
         </div>
 
         {/* Desktop Action Buttons */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-2">
           {isLoading ? (
-            <div className="w-24 h-9 bg-sanctuary-muted/50 rounded-full animate-pulse" />
+            <div className="w-24 h-8 bg-sanctuary-muted/50 rounded-full animate-pulse" />
           ) : user ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-100/80 text-purple-900 text-xs font-semibold whitespace-nowrap">
+                <UserIcon className="w-3.5 h-3.5 text-purple-700 shrink-0" />
+                <span className="truncate max-w-[140px] sm:max-w-[180px]">{displayName}</span>
+              </div>
               <Link
                 href="/settings"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-purple/10 text-brand-purple hover:bg-brand-purple/15 text-xs font-semibold transition-colors"
+                title="Settings & Privacy"
+                className="p-2 rounded-full text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-colors"
+                aria-label="Settings"
               >
-                <UserIcon className="w-3.5 h-3.5" />
-                <span>{displayName}</span>
+                <SettingsIcon className="w-4 h-4" />
               </Link>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => signOut()}
                 leftIcon={<LogOut className="w-3.5 h-3.5" />}
+                className="text-xs"
               >
                 Sign Out
               </Button>
             </div>
           ) : (
-            <>
+            <div className="flex items-center gap-2">
               <Link href="/auth/login">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="text-xs whitespace-nowrap">
                   Sign In
                 </Button>
               </Link>
@@ -83,11 +83,20 @@ export function Navbar() {
                   variant="primary"
                   size="sm"
                   rightIcon={<ArrowRight className="w-4 h-4" />}
+                  className="text-xs whitespace-nowrap"
                 >
                   Get Started
                 </Button>
               </Link>
-            </>
+              <Link
+                href="/settings"
+                title="Settings & Privacy"
+                className="p-2 rounded-full text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-colors"
+                aria-label="Settings"
+              >
+                <SettingsIcon className="w-4 h-4" />
+              </Link>
+            </div>
           )}
         </div>
 

@@ -46,13 +46,17 @@ export function useReflectionTracker() {
       }
     }
 
+    // Guest or fallback mode: load asynchronously to avoid cascading effect renders
+    await Promise.resolve();
     setReflections(getStoredReflections());
     setIsLoaded(true);
   }, [user]);
 
   useEffect(() => {
     if (!authLoading) {
-      loadReflections();
+      queueMicrotask(() => {
+        void loadReflections();
+      });
     }
   }, [authLoading, loadReflections]);
 

@@ -104,7 +104,7 @@ export function DailyMoodCheckIn({
       className={`p-6 sm:p-8 flex flex-col gap-6 border-2 border-sanctuary-border shadow-sanctuary-sm ${className}`}
     >
       {/* Header: Date & Status */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-sanctuary-border/80">
+      <div className="w-full flex items-center justify-between pb-4 border-b border-sanctuary-border/80 min-h-[56px]">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-brand-purple-light text-brand-purple flex items-center justify-center shrink-0">
             <Heart className="w-5 h-5" />
@@ -121,11 +121,11 @@ export function DailyMoodCheckIn({
         </div>
 
         {todayEntry && !isEditing ? (
-          <Badge variant="mint" size="md" className="w-fit">
+          <Badge variant="mint" size="md" className="w-fit shrink-0">
             Checked in today
           </Badge>
         ) : (
-          <Badge variant="purple" size="md" className="w-fit">
+          <Badge variant="purple" size="md" className="w-fit shrink-0">
             1 entry per day
           </Badge>
         )}

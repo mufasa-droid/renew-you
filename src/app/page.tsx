@@ -41,6 +41,7 @@ import {
 export default function RenewYouHomepage() {
   const { user, profile, signOut } = useAuth();
   const displayName = profile?.display_name || user?.email?.split('@')[0] || '';
+  const firstName = displayName ? displayName.trim().split(/\s+/)[0] : '';
 
   // Navigation State
   const [activeNav, setActiveNav] = useState<'home' | 'checkin' | 'overview' | 'history' | 'breathe'>('home');
@@ -107,19 +108,21 @@ export default function RenewYouHomepage() {
     <div className="min-h-screen bg-sanctuary-bg text-sanctuary-text-primary flex flex-col selection:bg-brand-purple-light selection:text-brand-purple">
       {/* 1. Header Navigation */}
       <header className="sticky top-0 z-40 w-full bg-[#FBF9FD]/95 backdrop-blur-md border-b border-sanctuary-border transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Logo size="md" showText={true} showTagline={true} orientation="horizontal" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3 shrink-0">
+            <Link href="/" className="flex items-center">
+              <Logo size="sm" showText={true} showTagline={false} orientation="horizontal" />
+            </Link>
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-1.5">
+          <nav aria-label="Main Navigation" className="hidden lg:flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setActiveNav('home')}
-              className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                 activeNav === 'home'
-                  ? 'bg-brand-purple text-white shadow-sanctuary-sm'
+                  ? 'bg-purple-100/80 text-purple-900 shadow-sm'
                   : 'text-sanctuary-text-secondary hover:text-sanctuary-text-primary hover:bg-sanctuary-muted'
               }`}
             >
@@ -128,7 +131,11 @@ export default function RenewYouHomepage() {
             <a
               href="#check-in"
               onClick={() => setActiveNav('checkin')}
-              className="px-4 py-2 rounded-full text-xs font-semibold text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-all cursor-pointer flex items-center gap-1.5"
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                activeNav === 'checkin'
+                  ? 'bg-purple-100/80 text-purple-900 shadow-sm'
+                  : 'text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted'
+              }`}
             >
               <Heart className="w-3.5 h-3.5" />
               <span>Mood Check-In</span>
@@ -136,7 +143,11 @@ export default function RenewYouHomepage() {
             <a
               href="#overview"
               onClick={() => setActiveNav('overview')}
-              className="px-4 py-2 rounded-full text-xs font-semibold text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-all cursor-pointer flex items-center gap-1.5"
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                activeNav === 'overview'
+                  ? 'bg-purple-100/80 text-purple-900 shadow-sm'
+                  : 'text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted'
+              }`}
             >
               <Calendar className="w-3.5 h-3.5" />
               <span>7-Day Overview</span>
@@ -144,7 +155,11 @@ export default function RenewYouHomepage() {
             <a
               href="#history"
               onClick={() => setActiveNav('history')}
-              className="px-4 py-2 rounded-full text-xs font-semibold text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-all cursor-pointer flex items-center gap-1.5"
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                activeNav === 'history'
+                  ? 'bg-purple-100/80 text-purple-900 shadow-sm'
+                  : 'text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted'
+              }`}
             >
               <Feather className="w-3.5 h-3.5" />
               <span>History</span>
@@ -152,97 +167,124 @@ export default function RenewYouHomepage() {
             <a
               href="#breathe"
               onClick={() => setActiveNav('breathe')}
-              className="px-4 py-2 rounded-full text-xs font-semibold text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-all cursor-pointer flex items-center gap-1.5"
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                activeNav === 'breathe'
+                  ? 'bg-purple-100/80 text-purple-900 shadow-sm'
+                  : 'text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted'
+              }`}
             >
               <Wind className="w-3.5 h-3.5" />
               <span>Breathe</span>
             </a>
             <Link
               href="/questionnaire"
-              className="px-4 py-2 rounded-full text-xs font-semibold text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-all cursor-pointer flex items-center gap-1.5"
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5"
             >
               <Heart className="w-3.5 h-3.5" />
               <span>Questionnaire</span>
             </Link>
-            <Link
-              href="/settings"
-              className="px-4 py-2 rounded-full text-xs font-semibold text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-all cursor-pointer flex items-center gap-1.5"
-            >
-              <SettingsIcon className="w-3.5 h-3.5" />
-              <span>Settings</span>
-            </Link>
           </nav>
 
-          {/* Auth Action Buttons & Settings */}
+          {/* Consolidate Redundant Controls & User Actions */}
           <div className="flex items-center gap-2">
             {user ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                {/* User Profile Pill */}
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-100/80 text-purple-900 text-xs font-semibold whitespace-nowrap">
+                  <UserIcon className="w-3.5 h-3.5 text-purple-700 shrink-0" />
+                  <span className="truncate max-w-[140px] sm:max-w-[180px]">{displayName || 'Sanctuary Friend'}</span>
+                </div>
+
+                {/* Single Clean Settings Link */}
                 <Link
                   href="/settings"
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-purple/10 text-brand-purple hover:bg-brand-purple/15 text-xs font-semibold transition-colors"
+                  title="Settings & Privacy"
+                  className="p-2 rounded-full text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-colors flex items-center gap-1 text-xs font-semibold"
+                  aria-label="Settings"
                 >
-                  <UserIcon className="w-3.5 h-3.5" />
-                  <span>{displayName}</span>
+                  <SettingsIcon className="w-4 h-4" />
+                  <span className="hidden xl:inline">Settings</span>
                 </Link>
+
+                {/* Sign Out Button */}
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => signOut()}
                   leftIcon={<LogOut className="w-3.5 h-3.5" />}
-                  className="hidden sm:inline-flex"
+                  className="hidden sm:inline-flex text-xs"
                 >
                   Sign Out
                 </Button>
               </div>
             ) : (
-              <>
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <Link href="/auth/login">
-                  <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                  <Button variant="ghost" size="sm" className="hidden sm:inline-flex text-xs whitespace-nowrap">
                     Sign In
                   </Button>
                 </Link>
 
                 <Link href="/auth/register">
-                  <Button variant="primary" size="sm">
+                  <Button variant="primary" size="sm" className="text-xs whitespace-nowrap">
                     Get Started
                   </Button>
                 </Link>
-              </>
-            )}
 
-            <Link
-              href="/settings"
-              aria-label="Settings & Privacy"
-              className="p-2.5 rounded-full bg-white border border-sanctuary-border hover:bg-sanctuary-muted text-sanctuary-text-secondary hover:text-brand-purple shadow-sanctuary-sm transition-all cursor-pointer"
-            >
-              <SettingsIcon className="w-4 h-4" />
-            </Link>
+                <Link
+                  href="/settings"
+                  title="Settings & Privacy"
+                  className="p-2 rounded-full text-sanctuary-text-secondary hover:text-brand-purple hover:bg-sanctuary-muted transition-colors"
+                  aria-label="Settings"
+                >
+                  <SettingsIcon className="w-4 h-4" />
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Mobile Navigation Strip */}
-        <div className="md:hidden flex items-center justify-between sm:justify-around px-2 sm:px-3 py-2 border-t border-sanctuary-border/60 bg-white/60 text-[11px] sm:text-xs font-semibold overflow-x-auto no-scrollbar whitespace-nowrap gap-1">
-          <a href="#check-in" className="py-1 px-2 sm:px-3 text-brand-purple shrink-0">
+        <div className="lg:hidden flex items-center justify-between sm:justify-around px-2 sm:px-3 py-2 border-t border-sanctuary-border/60 bg-white/60 text-[11px] sm:text-xs font-semibold overflow-x-auto no-scrollbar whitespace-nowrap gap-1">
+          <a
+            href="#check-in"
+            onClick={() => setActiveNav('checkin')}
+            className={`py-1 px-2.5 rounded-full whitespace-nowrap ${
+              activeNav === 'checkin' ? 'bg-purple-100/80 text-purple-900' : 'text-brand-purple'
+            }`}
+          >
             Check-In
           </a>
-          <a href="#overview" className="py-1 px-2 sm:px-3 text-sanctuary-text-secondary hover:text-brand-purple shrink-0">
+          <a
+            href="#overview"
+            onClick={() => setActiveNav('overview')}
+            className="py-1 px-2.5 text-sanctuary-text-secondary hover:text-brand-purple whitespace-nowrap"
+          >
             Overview
           </a>
-          <a href="#history" className="py-1 px-2 sm:px-3 text-sanctuary-text-secondary hover:text-brand-purple shrink-0">
+          <a
+            href="#history"
+            onClick={() => setActiveNav('history')}
+            className="py-1 px-2.5 text-sanctuary-text-secondary hover:text-brand-purple whitespace-nowrap"
+          >
             History
           </a>
-          <a href="#breathe" className="py-1 px-2 sm:px-3 text-sanctuary-text-secondary hover:text-brand-purple shrink-0">
+          <a
+            href="#breathe"
+            onClick={() => setActiveNav('breathe')}
+            className="py-1 px-2.5 text-sanctuary-text-secondary hover:text-brand-purple whitespace-nowrap"
+          >
             Breathe
           </a>
           <Link
             href="/questionnaire"
-            className="py-1 px-2 sm:px-3 text-sanctuary-text-secondary hover:text-brand-purple shrink-0"
+            className="py-1 px-2.5 text-sanctuary-text-secondary hover:text-brand-purple whitespace-nowrap"
           >
             Questionnaire
           </Link>
           <Link
             href="/settings"
-            className="py-1 px-2 sm:px-3 text-sanctuary-text-secondary hover:text-brand-purple shrink-0"
+            className="py-1 px-2.5 text-sanctuary-text-secondary hover:text-brand-purple whitespace-nowrap"
           >
             Settings
           </Link>
@@ -250,7 +292,7 @@ export default function RenewYouHomepage() {
       </header>
 
       {/* Main Dashboard Layout */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col gap-10">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7 flex flex-col gap-6">
         {/* Success Notice when data was cleared */}
         {clearSuccessNotice && (
           <div
@@ -278,23 +320,23 @@ export default function RenewYouHomepage() {
         <GuestMigrationPrompt />
 
         {/* Welcome Greeting Banner */}
-        <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+        <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
           <div className="flex flex-col">
-            <div className="flex items-center gap-2 mb-1.5">
+            <div className="flex items-center gap-2 mb-1">
               <Sun className="w-4 h-4 text-amber-500" />
               <span className="text-xs font-bold uppercase tracking-wider text-sanctuary-text-secondary">
                 Renew You Sanctuary
               </span>
             </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-sanctuary-text-primary tracking-tight">
-              {displayName ? `Welcome back to peace, ${displayName}.` : 'Welcome back to peace.'}
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-sanctuary-text-primary tracking-tight">
+              {firstName ? `Welcome back to peace, ${firstName}.` : 'Welcome back to peace.'}
             </h1>
-            <p className="text-xs sm:text-sm text-sanctuary-text-secondary mt-1 max-w-xl">
+            <p className="text-xs sm:text-sm text-sanctuary-text-secondary mt-0.5 max-w-xl">
               Check in with your emotions, explore guided reflections, and take a gentle breath in your personal sanctuary.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <Button
               variant="outline"
               size="sm"
@@ -303,19 +345,13 @@ export default function RenewYouHomepage() {
             >
               {settings.ambientSound ? 'Ambiance On' : 'Silent Sanctuary'}
             </Button>
-
-            <Link href="/settings">
-              <Button variant="secondary" size="sm" leftIcon={<SettingsIcon className="w-3.5 h-3.5" />}>
-                Settings &amp; Data
-              </Button>
-            </Link>
           </div>
         </section>
 
         {/* 2-Column Responsive Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Daily Mood Check-In & 7-Day Overview & History (lg:col-span-7) */}
-          <section className="lg:col-span-7 flex flex-col gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          {/* Left Column: Daily Mood Check-In & 7-Day Overview & History */}
+          <section className="flex flex-col gap-6 w-full">
             {/* Prominent Daily Mood Check-In Card */}
             <div id="check-in" className="scroll-mt-24">
               <DailyMoodCheckIn
@@ -338,8 +374,8 @@ export default function RenewYouHomepage() {
             </div>
           </section>
 
-          {/* Right Column: Guided Breathing Exercise & Daily Reflection (lg:col-span-5) */}
-          <div className="lg:col-span-5 flex flex-col gap-8">
+          {/* Right Column: Guided Breathing Exercise & Daily Reflection */}
+          <div className="flex flex-col gap-6 w-full">
             {/* Phase 7 Guided Breathing Exercise Card */}
             <div id="breathe" className="scroll-mt-24">
               <BreathingExercise

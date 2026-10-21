@@ -11,7 +11,7 @@ import {
   formatDisplayDate,
 } from './moodStorage';
 import { MOOD_CONFIGS } from './moodConstants';
-import { STORAGE_EVENTS, safeSetItem, STORAGE_KEYS } from './storageManager';
+import { STORAGE_EVENTS } from './storageManager';
 import { useAuth } from '@/context/AuthContext';
 import { createClient, isSupabaseConfigured } from './supabase/client';
 
@@ -52,14 +52,17 @@ export function useMoodTracker() {
       }
     }
 
-    // Guest or fallback mode: load from localStorage
+    // Guest or fallback mode: load asynchronously to avoid cascading effect renders
+    await Promise.resolve();
     setEntries(getMoodEntries());
     setIsLoaded(true);
   }, [user]);
 
   useEffect(() => {
     if (!authLoading) {
-      loadEntries();
+      queueMicrotask(() => {
+        void loadEntries();
+      });
     }
   }, [authLoading, loadEntries]);
 
@@ -96,7 +99,6 @@ export function useMoodTracker() {
   const saveMood = useCallback(
     async (level: MoodLevel, note?: string): Promise<MoodEntry> => {
       const todayKey = getLocalTodayDateKey();
-      const displayDate = formatDisplayDate(todayKey);
       const config = MOOD_CONFIGS[level];
       const nowIso = new Date().toISOString();
 

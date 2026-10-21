@@ -108,14 +108,14 @@ export function Logo({
 
   return (
     <div
-      className={`inline-flex items-center ${
+      className={`inline-flex items-center whitespace-nowrap ${
         orientation === 'vertical' ? 'flex-col text-center' : 'flex-row gap-3 text-left'
       } ${className}`}
     >
       <LotusMark size={currentSize} />
       {showText && (
-        <div className={orientation === 'vertical' ? 'mt-2.5' : ''}>
-          <span className="block font-sans font-bold tracking-[0.16em] text-sanctuary-text-primary text-lg sm:text-xl leading-tight">
+        <div className={orientation === 'vertical' ? 'mt-2.5' : 'whitespace-nowrap'}>
+          <span className="block font-sans font-bold tracking-[0.16em] text-sanctuary-text-primary text-lg sm:text-xl leading-tight whitespace-nowrap">
             RENEW YOU
           </span>
           {showTagline && (

@@ -19,7 +19,9 @@ export function GuestMigrationPrompt() {
     if (user && !dismissed) {
       const summary = checkGuestData();
       if (summary.hasGuestData) {
-        setGuestSummary(summary);
+        queueMicrotask(() => {
+          setGuestSummary(summary);
+        });
       }
     }
   }, [user, dismissed]);

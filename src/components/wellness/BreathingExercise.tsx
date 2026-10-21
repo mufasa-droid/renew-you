@@ -191,19 +191,19 @@ export function BreathingExercise({
   return (
     <Card
       variant="white"
-      className={`p-4 sm:p-10 flex flex-col items-center border border-sanctuary-border shadow-sanctuary-sm ${className}`}
+      className={`p-6 sm:p-8 flex flex-col items-center border-2 border-sanctuary-border shadow-sanctuary-sm ${className}`}
     >
       {/* Top Header & Cycle Badges */}
-      <div className="w-full flex items-center justify-between pb-4 border-b border-sanctuary-border/80">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-brand-purple-light text-brand-purple flex items-center justify-center">
-            <Wind className="w-4 h-4" />
+      <div className="w-full flex items-center justify-between pb-4 border-b border-sanctuary-border/80 min-h-[56px]">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-brand-purple-light text-brand-purple flex items-center justify-center shrink-0">
+            <Wind className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base sm:text-lg font-bold text-sanctuary-text-primary tracking-tight">
+            <h2 className="text-lg sm:text-xl font-bold text-sanctuary-text-primary tracking-tight">
               Guided Breathing Exercise
-            </h3>
-            <span className="text-xs text-sanctuary-text-secondary">
+            </h2>
+            <span className="text-xs text-sanctuary-text-secondary mt-0.5 block">
               Personal rhythm to center your attention
             </span>
           </div>
@@ -211,7 +211,7 @@ export function BreathingExercise({
 
         {status === 'running' || status === 'paused' ? (
           <div className="flex items-center gap-2">
-            <Badge variant="purple" size="sm">
+            <Badge variant="purple" size="md">
               Cycle {currentCycle} / {targetCycles}
             </Badge>
             <span className="text-xs font-mono font-semibold text-sanctuary-text-secondary">
@@ -219,46 +219,46 @@ export function BreathingExercise({
             </span>
           </div>
         ) : (
-          <Badge variant="mint" size="sm">
+          <Badge variant="mint" size="md" className="w-fit shrink-0">
             {targetCycles} Mindful Cycles
           </Badge>
         )}
       </div>
 
       {/* Safety & Usability Notice (Always visible) */}
-      <div className="w-full mt-4 p-3 rounded-xl bg-sanctuary-muted/80 border border-sanctuary-border/60 flex items-start gap-2.5 text-xs text-sanctuary-text-secondary">
+      <div className="w-full mt-3 p-2.5 rounded-xl bg-sanctuary-muted/80 border border-sanctuary-border/60 flex items-start gap-2 text-xs text-sanctuary-text-secondary">
         <Info className="w-4 h-4 text-brand-purple shrink-0 mt-0.5" />
-        <p className="leading-relaxed">
-          <strong>Safety note:</strong> Breathe at your own comfortable, natural pace. You are in control and can stop anytime. If you feel lightheaded, breathless, or dizzy, pause and breathe normally.
+        <p className="leading-relaxed text-[11px] sm:text-xs">
+          <strong>Safety note:</strong> Breathe at your own comfortable, natural pace. You are in control and can stop anytime. If you feel lightheaded, pause and breathe normally.
         </p>
       </div>
 
       {/* State 1: Idle Start Screen */}
       {status === 'idle' && (
-        <div className="flex flex-col items-center text-center max-w-md w-full py-6">
-          <div className="w-24 h-24 rounded-full bg-brand-purple-light flex items-center justify-center text-brand-purple my-4 shadow-sanctuary-sm">
-            <Wind className="w-10 h-10 stroke-[1.75]" />
+        <div className="flex flex-col items-center text-center max-w-md w-full py-2 sm:py-3">
+          <div className="w-16 h-16 rounded-full bg-brand-purple-light flex items-center justify-center text-brand-purple my-2 shadow-sanctuary-sm">
+            <Wind className="w-8 h-8 stroke-[1.75]" />
           </div>
 
-          <h4 className="text-xl font-bold text-sanctuary-text-primary">
+          <h4 className="text-lg sm:text-xl font-bold text-sanctuary-text-primary tracking-tight">
             Ready for a Mindful Pause?
           </h4>
-          <p className="text-xs sm:text-sm text-sanctuary-text-secondary mt-1.5 leading-relaxed">
+          <p className="text-xs text-sanctuary-text-secondary mt-1 max-w-sm leading-relaxed">
             Choose your comfortable breathing cadence below. Rest your hands gently, soften your gaze, and begin whenever you are ready.
           </p>
 
           {/* Pattern Selection */}
-          <div className="flex flex-col gap-2 w-full mt-6 text-left">
+          <div className="flex flex-col gap-1.5 w-full mt-3 text-left">
             <span className="text-xs font-semibold text-sanctuary-text-primary px-1">
               Select cadence:
             </span>
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-1 gap-1.5">
               {PATTERNS.map((pattern) => (
                 <button
                   key={pattern.id}
                   type="button"
                   onClick={() => setSelectedPatternId(pattern.id)}
-                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer select-none flex items-start justify-between gap-3 ${
+                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer select-none flex items-start justify-between gap-3 ${
                     selectedPatternId === pattern.id
                       ? 'bg-brand-purple-light/50 border-brand-purple/40 ring-1 ring-brand-purple/20'
                       : 'bg-white border-sanctuary-border hover:bg-sanctuary-muted'
@@ -282,10 +282,10 @@ export function BreathingExercise({
           </div>
 
           {/* Start CTA */}
-          <div className="mt-8 w-full">
+          <div className="mt-4 w-full">
             <Button
               variant="primary"
-              size="lg"
+              size="md"
               fullWidth
               onClick={handleStart}
               leftIcon={<Play className="w-4 h-4 fill-current" />}
