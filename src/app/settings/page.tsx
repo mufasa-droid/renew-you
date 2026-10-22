@@ -34,11 +34,12 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 
 export default function SettingsPage() {
   const { user, profile, signOut } = useAuth();
-  const { entries, isLoaded: moodsLoaded } = useMoodTracker();
-  const { reflections, isLoaded: reflectionsLoaded } = useReflectionTracker();
+  const { entries, isLoaded: moodsLoaded, reload: reloadMoods } = useMoodTracker();
+  const { reflections, isLoaded: reflectionsLoaded, reload: reloadReflections } = useReflectionTracker();
   const { settings, toggleAmbientSound } = useSanctuarySettings();
 
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -64,10 +65,20 @@ export default function SettingsPage() {
     return isStorageAvailable();
   }, []);
 
-  const handleConfirmClear = () => {
+  const handleConfirmClear = async () => {
     setIsClearing(true);
     try {
+      if (user && isSupabaseConfigured()) {
+        const supabase = createClient();
+        await Promise.allSettled([
+          supabase.from('mood_entries').delete().eq('user_id', user.id),
+          supabase.from('reflections').delete().eq('user_id', user.id),
+          supabase.from('questionnaire_responses').delete().eq('user_id', user.id),
+        ]);
+      }
       const result = clearRenewYouData();
+      await reloadMoods();
+      await reloadReflections();
       setConfirmModalOpen(false);
       setIsClearing(false);
       setClearedNotice({
