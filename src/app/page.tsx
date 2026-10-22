@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { Logo, LotusMark } from '@/components/brand/Logo';
 import { Button } from '@/components/ui/Button';
@@ -38,6 +38,19 @@ import {
   X,
 } from 'lucide-react';
 
+function getClientDate() {
+  if (typeof window === 'undefined') return '';
+  return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+}
+
+function getServerDate() {
+  return '';
+}
+
+function emptySubscribe() {
+  return () => {};
+}
+
 export default function RenewYouHomepage() {
   const { user, profile, signOut } = useAuth();
   const displayName = profile?.display_name || user?.email?.split('@')[0] || '';
@@ -52,14 +65,12 @@ export default function RenewYouHomepage() {
   // Navigation State
   const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [currentDateFormatted, setCurrentDateFormatted] = useState('');
+  const currentDateFormatted = useSyncExternalStore(
+    emptySubscribe,
+    getClientDate,
+    getServerDate
+  );
   const avatarMenuRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    setCurrentDateFormatted(
-      new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
-    );
-  }, []);
 
   // Close avatar dropdown on outside click or Escape
   React.useEffect(() => {
